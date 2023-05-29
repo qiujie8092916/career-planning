@@ -28,12 +28,6 @@ export const cleanSelectedConversation = (conversation: Conversation) => {
     };
   }
 
-  if (!updatedConversation.temperature) {
-    updatedConversation = {
-      ...updatedConversation,
-    };
-  }
-
   if (!updatedConversation.folderId) {
     updatedConversation = {
       ...updatedConversation,
