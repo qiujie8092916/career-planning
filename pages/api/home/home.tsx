@@ -15,7 +15,7 @@ import {
   cleanConversationHistory,
   cleanSelectedConversation,
 } from '@/utils/app/clean';
-import { DEFAULT_SYSTEM_PROMPT, DEFAULT_TEMPERATURE } from '@/utils/app/const';
+import { DEFAULT_SYSTEM_PROMPT } from '@/utils/app/const';
 import {
   saveConversation,
   saveConversations,
@@ -34,7 +34,6 @@ import { Prompt } from '@/types/prompt';
 import { Chat } from '@/components/Chat/Chat';
 import { Chatbar } from '@/components/Chatbar/Chatbar';
 import { Navbar } from '@/components/Mobile/Navbar';
-import Promptbar from '@/components/Promptbar';
 
 import HomeContext from './home.context';
 import { HomeInitialState, initialState } from './home.state';
@@ -192,7 +191,6 @@ const Home = ({
         tokenLimit: OpenAIModels[defaultModelId].tokenLimit,
       },
       prompt: DEFAULT_SYSTEM_PROMPT,
-      temperature: lastConversation?.temperature ?? DEFAULT_TEMPERATURE,
       folderId: null,
     };
 
@@ -269,14 +267,6 @@ const Home = ({
       dispatch({ field: 'apiKey', value: apiKey });
     }
 
-    const pluginKeys = localStorage.getItem('pluginKeys');
-    if (serverSidePluginKeysSet) {
-      dispatch({ field: 'pluginKeys', value: [] });
-      localStorage.removeItem('pluginKeys');
-    } else if (pluginKeys) {
-      dispatch({ field: 'pluginKeys', value: pluginKeys });
-    }
-
     if (window.innerWidth < 640) {
       dispatch({ field: 'showChatbar', value: false });
       dispatch({ field: 'showPromptbar', value: false });
@@ -335,7 +325,6 @@ const Home = ({
           messages: [],
           model: OpenAIModels[defaultModelId],
           prompt: DEFAULT_SYSTEM_PROMPT,
-          temperature: lastConversation?.temperature ?? DEFAULT_TEMPERATURE,
           folderId: null,
         },
       });
@@ -385,8 +374,6 @@ const Home = ({
             <div className="flex flex-1">
               <Chat stopConversationRef={stopConversationRef} />
             </div>
-
-            <Promptbar />
           </div>
         </main>
       )}
@@ -405,13 +392,6 @@ export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
     fallbackModelID;
 
   let serverSidePluginKeysSet = false;
-
-  const googleApiKey = process.env.GOOGLE_API_KEY;
-  const googleCSEId = process.env.GOOGLE_CSE_ID;
-
-  if (googleApiKey && googleCSEId) {
-    serverSidePluginKeysSet = true;
-  }
 
   return {
     props: {

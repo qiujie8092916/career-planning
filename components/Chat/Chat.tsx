@@ -21,7 +21,6 @@ import {
 import { throttle } from '@/utils/data/throttle';
 
 import { ChatBody, Conversation, Message } from '@/types/chat';
-import { Plugin } from '@/types/plugin';
 
 import HomeContext from '@/pages/api/home/home.context';
 
@@ -29,9 +28,7 @@ import Spinner from '../Spinner';
 import { ChatInput } from './ChatInput';
 import { ChatLoader } from './ChatLoader';
 import { ErrorMessageDiv } from './ErrorMessageDiv';
-import { ModelSelect } from './ModelSelect';
 import { SystemPrompt } from './SystemPrompt';
-import { TemperatureSlider } from './Temperature';
 import { MemoizedChatMessage } from './MemoizedChatMessage';
 
 interface Props {
@@ -47,9 +44,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
       conversations,
       models,
       apiKey,
-      pluginKeys,
       serverSideApiKeyIsSet,
-      messageIsStreaming,
       modelError,
       loading,
       prompts,
@@ -98,21 +93,14 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
           messages: updatedConversation.messages,
           key: apiKey,
           prompt: updatedConversation.prompt,
-          temperature: updatedConversation.temperature,
         };
-        const endpoint = getEndpoint(plugin);
+        const endpoint = getEndpoint();
         let body;
         if (!plugin) {
           body = JSON.stringify(chatBody);
         } else {
           body = JSON.stringify({
             ...chatBody,
-            googleAPIKey: pluginKeys
-              .find((key) => key.pluginId === 'google-search')
-              ?.requiredKeys.find((key) => key.key === 'GOOGLE_API_KEY')?.value,
-            googleCSEId: pluginKeys
-              .find((key) => key.pluginId === 'google-search')
-              ?.requiredKeys.find((key) => key.key === 'GOOGLE_CSE_ID')?.value,
           });
         }
         const controller = new AbortController();
@@ -248,7 +236,6 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
     [
       apiKey,
       conversations,
-      pluginKeys,
       selectedConversation,
       stopConversationRef,
     ],
@@ -411,8 +398,6 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
 
                   {models.length > 0 && (
                     <div className="flex h-full flex-col space-y-4 rounded-lg border border-neutral-200 p-4 dark:border-neutral-600">
-                      <ModelSelect />
-
                       <SystemPrompt
                         conversation={selectedConversation}
                         prompts={prompts}
@@ -423,16 +408,6 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
                           })
                         }
                       />
-
-                      <TemperatureSlider
-                        label={t('Temperature')}
-                        onChangeTemperature={(temperature) =>
-                          handleUpdateConversation(selectedConversation, {
-                            key: 'temperature',
-                            value: temperature,
-                          })
-                        }
-                      />
                     </div>
                   )}
                 </div>
@@ -440,28 +415,8 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
             ) : (
               <>
                 <div className="sticky top-0 z-10 flex justify-center border border-b-neutral-300 bg-neutral-100 py-2 text-sm text-neutral-500 dark:border-none dark:bg-[#444654] dark:text-neutral-200">
-                  {t('Model')}: {selectedConversation?.model.name} | {t('Temp')}
-                  : {selectedConversation?.temperature} |
-                  <button
-                    className="ml-2 cursor-pointer hover:opacity-50"
-                    onClick={handleSettings}
-                  >
-                    <IconSettings size={18} />
-                  </button>
-                  <button
-                    className="ml-2 cursor-pointer hover:opacity-50"
-                    onClick={onClearAll}
-                  >
-                    <IconClearAll size={18} />
-                  </button>
+                  {t('Model')}: {selectedConversation?.model.name}
                 </div>
-                {showSettings && (
-                  <div className="flex flex-col space-y-10 md:mx-auto md:max-w-xl md:gap-6 md:py-3 md:pt-6 lg:max-w-2xl lg:px-0 xl:max-w-3xl">
-                    <div className="flex h-full flex-col space-y-4 border-b border-neutral-200 p-4 dark:border-neutral-600 md:rounded-lg md:border">
-                      <ModelSelect />
-                    </div>
-                  </div>
-                )}
 
                 {selectedConversation?.messages.map((message, index) => (
                   <MemoizedChatMessage
@@ -492,9 +447,9 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
           <ChatInput
             stopConversationRef={stopConversationRef}
             textareaRef={textareaRef}
-            onSend={(message, plugin) => {
+            onSend={(message) => {
               setCurrentMessage(message);
-              handleSend(message, 0, plugin);
+              handleSend(message, 0);
             }}
             onScrollDownClick={handleScrollDown}
             onRegenerate={() => {

@@ -1,16 +1,10 @@
 import {
-  IconCheck,
-  IconCopy,
-  IconEdit,
   IconRobot,
-  IconTrash,
   IconUser,
 } from '@tabler/icons-react';
 import { FC, memo, useContext, useEffect, useRef, useState } from 'react';
 
 import { useTranslation } from 'next-i18next';
-
-import { updateConversation } from '@/utils/app/conversation';
 
 import { Message } from '@/types/chat';
 
@@ -34,13 +28,11 @@ export const ChatMessage: FC<Props> = memo(({ message, messageIndex, onEdit }) =
 
   const {
     state: { selectedConversation, conversations, currentMessage, messageIsStreaming },
-    dispatch: homeDispatch,
   } = useContext(HomeContext);
 
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [isTyping, setIsTyping] = useState<boolean>(false);
   const [messageContent, setMessageContent] = useState(message.content);
-  const [messagedCopied, setMessageCopied] = useState(false);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -65,51 +57,11 @@ export const ChatMessage: FC<Props> = memo(({ message, messageIndex, onEdit }) =
     setIsEditing(false);
   };
 
-  const handleDeleteMessage = () => {
-    if (!selectedConversation) return;
-
-    const { messages } = selectedConversation;
-    const findIndex = messages.findIndex((elm) => elm === message);
-
-    if (findIndex < 0) return;
-
-    if (
-      findIndex < messages.length - 1 &&
-      messages[findIndex + 1].role === 'assistant'
-    ) {
-      messages.splice(findIndex, 2);
-    } else {
-      messages.splice(findIndex, 1);
-    }
-    const updatedConversation = {
-      ...selectedConversation,
-      messages,
-    };
-
-    const { single, all } = updateConversation(
-      updatedConversation,
-      conversations,
-    );
-    homeDispatch({ field: 'selectedConversation', value: single });
-    homeDispatch({ field: 'conversations', value: all });
-  };
-
   const handlePressEnter = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !isTyping && !e.shiftKey) {
       e.preventDefault();
       handleEditMessage();
     }
-  };
-
-  const copyOnClick = () => {
-    if (!navigator.clipboard) return;
-
-    navigator.clipboard.writeText(message.content).then(() => {
-      setMessageCopied(true);
-      setTimeout(() => {
-        setMessageCopied(false);
-      }, 2000);
-    });
   };
 
   useEffect(() => {
@@ -189,23 +141,6 @@ export const ChatMessage: FC<Props> = memo(({ message, messageIndex, onEdit }) =
                   {message.content}
                 </div>
               )}
-
-              {!isEditing && (
-                <div className="md:-mr-8 ml-1 md:ml-0 flex flex-col md:flex-row gap-4 md:gap-1 items-center md:items-start justify-end md:justify-start">
-                  <button
-                    className="invisible group-hover:visible focus:visible text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
-                    onClick={toggleEditing}
-                  >
-                    <IconEdit size={20} />
-                  </button>
-                  <button
-                    className="invisible group-hover:visible focus:visible text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
-                    onClick={handleDeleteMessage}
-                  >
-                    <IconTrash size={20} />
-                  </button>
-                </div>
-              )}
             </div>
           ) : (
             <div className="flex flex-row">
@@ -265,22 +200,6 @@ export const ChatMessage: FC<Props> = memo(({ message, messageIndex, onEdit }) =
                   messageIsStreaming && messageIndex == (selectedConversation?.messages.length ?? 0) - 1 ? '`▍`' : ''
                 }`}
               </MemoizedReactMarkdown>
-
-              <div className="md:-mr-8 ml-1 md:ml-0 flex flex-col md:flex-row gap-4 md:gap-1 items-center md:items-start justify-end md:justify-start">
-                {messagedCopied ? (
-                  <IconCheck
-                    size={20}
-                    className="text-green-500 dark:text-green-400"
-                  />
-                ) : (
-                  <button
-                    className="invisible group-hover:visible focus:visible text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
-                    onClick={copyOnClick}
-                  >
-                    <IconCopy size={20} />
-                  </button>
-                )}
-              </div>
             </div>
           )}
         </div>

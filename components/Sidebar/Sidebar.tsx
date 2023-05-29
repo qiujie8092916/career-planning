@@ -7,8 +7,6 @@ import {
   OpenSidebarButton,
 } from './components/OpenCloseButton';
 
-import Search from '../Search';
-
 interface Props<T> {
   isOpen: boolean;
   addItemButtonTitle: string;
@@ -16,7 +14,6 @@ interface Props<T> {
   items: T[];
   itemComponent: ReactNode;
   folderComponent: ReactNode;
-  footerComponent?: ReactNode;
   searchTerm: string;
   handleSearchTerm: (searchTerm: string) => void;
   toggleOpen: () => void;
@@ -32,7 +29,6 @@ const Sidebar = <T,>({
   items,
   itemComponent,
   folderComponent,
-  footerComponent,
   searchTerm,
   handleSearchTerm,
   toggleOpen,
@@ -61,7 +57,7 @@ const Sidebar = <T,>({
       >
         <div className="flex items-center">
           <button
-            className="text-sidebar flex w-[190px] flex-shrink-0 cursor-pointer select-none items-center gap-3 rounded-md border border-white/20 p-3 text-white transition-colors duration-200 hover:bg-gray-500/10"
+            className="text-sidebar flex w-full flex-shrink-0 cursor-pointer select-none items-center gap-3 rounded-md border border-white/20 p-3 text-white transition-colors duration-200 hover:bg-gray-500/10"
             onClick={() => {
               handleCreateItem();
               handleSearchTerm('');
@@ -70,19 +66,7 @@ const Sidebar = <T,>({
             <IconPlus size={16} />
             {addItemButtonTitle}
           </button>
-
-          <button
-            className="ml-2 flex flex-shrink-0 cursor-pointer items-center gap-3 rounded-md border border-white/20 p-3 text-sm text-white transition-colors duration-200 hover:bg-gray-500/10"
-            onClick={handleCreateFolder}
-          >
-            <IconFolderPlus size={16} />
-          </button>
         </div>
-        <Search
-          placeholder={t('Search...') || ''}
-          searchTerm={searchTerm}
-          onSearch={handleSearchTerm}
-        />
 
         <div className="flex-grow overflow-auto">
           {items?.length > 0 && (
@@ -110,7 +94,6 @@ const Sidebar = <T,>({
             </div>
           )}
         </div>
-        {footerComponent}
       </div>
 
       <CloseSidebarButton onClick={toggleOpen} side={side} />
