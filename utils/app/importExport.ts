@@ -47,7 +47,7 @@ export function cleanData(data: SupportedExportFormats): LatestExportFormat {
   }
 
   if (isExportFormatV3(data)) {
-    return { ...data, version: 4, prompts: [] };
+    return { ...(data as any), version: 4, prompts: [] };
   }
 
   if (isExportFormatV4(data)) {
