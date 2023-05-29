@@ -1,4 +1,4 @@
-import { IconFolderPlus, IconMistOff, IconPlus } from '@tabler/icons-react';
+import { IconMistOff, IconPlus } from '@tabler/icons-react';
 import { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -14,11 +14,9 @@ interface Props<T> {
   items: T[];
   itemComponent: ReactNode;
   folderComponent: ReactNode;
-  searchTerm: string;
   handleSearchTerm: (searchTerm: string) => void;
   toggleOpen: () => void;
   handleCreateItem: () => void;
-  handleCreateFolder: () => void;
   handleDrop: (e: any) => void;
 }
 
@@ -29,11 +27,9 @@ const Sidebar = <T,>({
   items,
   itemComponent,
   folderComponent,
-  searchTerm,
   handleSearchTerm,
   toggleOpen,
   handleCreateItem,
-  handleCreateFolder,
   handleDrop,
 }: Props<T>) => {
   const { t } = useTranslation('promptbar');

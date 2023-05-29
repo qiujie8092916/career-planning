@@ -36,10 +36,6 @@ export const ChatMessage: FC<Props> = memo(({ message, messageIndex, onEdit }) =
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const toggleEditing = () => {
-    setIsEditing(!isEditing);
-  };
-
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setMessageContent(event.target.value);
     if (textareaRef.current) {
