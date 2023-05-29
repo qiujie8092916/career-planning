@@ -13,11 +13,9 @@ interface Props<T> {
   side: 'left' | 'right';
   items: T[];
   itemComponent: ReactNode;
-  folderComponent: ReactNode;
   handleSearchTerm: (searchTerm: string) => void;
   toggleOpen: () => void;
   handleCreateItem: () => void;
-  handleDrop: (e: any) => void;
 }
 
 const Sidebar = <T,>({
@@ -26,11 +24,9 @@ const Sidebar = <T,>({
   side,
   items,
   itemComponent,
-  folderComponent,
   handleSearchTerm,
   toggleOpen,
   handleCreateItem,
-  handleDrop,
 }: Props<T>) => {
   const { t } = useTranslation('promptbar');
 
@@ -65,16 +61,9 @@ const Sidebar = <T,>({
         </div>
 
         <div className="flex-grow overflow-auto">
-          {items?.length > 0 && (
-            <div className="flex border-b border-white/20 pb-2">
-              {folderComponent}
-            </div>
-          )}
-
           {items?.length > 0 ? (
             <div
               className="pt-2"
-              onDrop={handleDrop}
               onDragOver={allowDrop}
               onDragEnter={highlightDrop}
               onDragLeave={removeHighlight}

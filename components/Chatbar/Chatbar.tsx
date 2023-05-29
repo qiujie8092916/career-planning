@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect } from 'react';
+import { useCallback, useContext } from 'react';
 
 import { useTranslation } from 'next-i18next';
 
@@ -6,7 +6,6 @@ import { useCreateReducer } from '@/hooks/useCreateReducer';
 
 import { DEFAULT_SYSTEM_PROMPT } from '@/utils/app/const';
 import { saveConversation, saveConversations } from '@/utils/app/conversation';
-import { saveFolders } from '@/utils/app/folders';
 import { exportData, importData } from '@/utils/app/importExport';
 
 import { Conversation } from '@/types/chat';
@@ -15,7 +14,6 @@ import { OpenAIModels } from '@/types/openai';
 
 import HomeContext from '@/pages/api/home/home.context';
 
-import { ChatFolders } from './components/ChatFolders';
 import { Conversations } from './components/Conversations';
 
 import Sidebar from '../Sidebar';
@@ -32,15 +30,14 @@ export const Chatbar = () => {
   });
 
   const {
-    state: { conversations, showChatbar, defaultModelId, folders },
+    state: { conversations, showChatbar, defaultModelId },
     dispatch: homeDispatch,
-    handleCreateFolder,
     handleNewConversation,
     handleUpdateConversation,
   } = useContext(HomeContext);
 
   const {
-    state: { searchTerm, filteredConversations },
+    state: { filteredConversations },
     dispatch: chatDispatch,
   } = chatBarContextValue;
 
@@ -58,13 +55,12 @@ export const Chatbar = () => {
   };
 
   const handleImportConversations = (data: SupportedExportFormats) => {
-    const { history, folders, prompts }: LatestExportFormat = importData(data);
+    const { history, prompts }: LatestExportFormat = importData(data);
     homeDispatch({ field: 'conversations', value: history });
     homeDispatch({
       field: 'selectedConversation',
       value: history[history.length - 1],
     });
-    homeDispatch({ field: 'folders', value: folders });
     homeDispatch({ field: 'prompts', value: prompts });
 
     window.location.reload();
@@ -80,7 +76,6 @@ export const Chatbar = () => {
           messages: [],
           model: OpenAIModels[defaultModelId],
           prompt: DEFAULT_SYSTEM_PROMPT,
-          folderId: null,
         },
       });
 
@@ -88,11 +83,6 @@ export const Chatbar = () => {
 
     localStorage.removeItem('conversationHistory');
     localStorage.removeItem('selectedConversation');
-
-    const updatedFolders = folders.filter((f) => f.type !== 'chat');
-
-    homeDispatch({ field: 'folders', value: updatedFolders });
-    saveFolders(updatedFolders);
   };
 
   const handleDeleteConversation = (conversation: Conversation) => {
@@ -121,7 +111,6 @@ export const Chatbar = () => {
             messages: [],
             model: OpenAIModels[defaultModelId],
             prompt: DEFAULT_SYSTEM_PROMPT,
-            folderId: null,
           },
         });
 
@@ -133,35 +122,6 @@ export const Chatbar = () => {
     homeDispatch({ field: 'showChatbar', value: !showChatbar });
     localStorage.setItem('showChatbar', JSON.stringify(!showChatbar));
   };
-
-  const handleDrop = (e: any) => {
-    if (e.dataTransfer) {
-      const conversation = JSON.parse(e.dataTransfer.getData('conversation'));
-      handleUpdateConversation(conversation, { key: 'folderId', value: 0 });
-      chatDispatch({ field: 'searchTerm', value: '' });
-      e.target.style.background = 'none';
-    }
-  };
-
-  useEffect(() => {
-    if (searchTerm) {
-      chatDispatch({
-        field: 'filteredConversations',
-        value: conversations.filter((conversation) => {
-          const searchable =
-            conversation.name.toLocaleLowerCase() +
-            ' ' +
-            conversation.messages.map((message) => message.content).join(' ');
-          return searchable.toLowerCase().includes(searchTerm.toLowerCase());
-        }),
-      });
-    } else {
-      chatDispatch({
-        field: 'filteredConversations',
-        value: conversations,
-      });
-    }
-  }, [searchTerm, conversations]);
 
   return (
     <ChatbarContext.Provider
@@ -179,16 +139,12 @@ export const Chatbar = () => {
         isOpen={showChatbar}
         addItemButtonTitle={t('New chat')}
         itemComponent={<Conversations conversations={filteredConversations} />}
-        folderComponent={<ChatFolders searchTerm={searchTerm} />}
         items={filteredConversations}
-        searchTerm={searchTerm}
         handleSearchTerm={(searchTerm: string) =>
           chatDispatch({ field: 'searchTerm', value: searchTerm })
         }
         toggleOpen={handleToggleChatbar}
         handleCreateItem={handleNewConversation}
-        handleCreateFolder={() => handleCreateFolder(t('New folder'), 'chat')}
-        handleDrop={handleDrop}
       />
     </ChatbarContext.Provider>
   );
