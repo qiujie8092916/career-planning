@@ -74,7 +74,7 @@ const Modal: FC<Props> = ({
         window.removeEventListener('mousedown', handleMouseDown);
       }
     };
-  }, [onClose]);
+  }, [maskClosable, onClose]);
 
   return (
     <div
