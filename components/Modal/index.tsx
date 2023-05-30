@@ -94,7 +94,7 @@ const Modal: FC<Props> = ({
             ref={modalRef}
             className={clsx(
               modalClassName ?? '',
-              'dark:border-netural-400 inline-block transform overflow-hidden rounded-lg border-gray-300 bg-[#eff3f8] text-left align-bottom text-[#0f172a] shadow-xl transition-all dark:bg-[#1d1e20] dark:text-[#d1d5db] sm:my-8 sm:w-full sm:align-middle',
+              'inline-block transform overflow-hidden rounded-lg border-gray-300 bg-[#eff3f8] text-left align-bottom text-[#0f172a] shadow-xl transition-all sm:my-8 sm:w-full sm:align-middle',
             )}
             style={{ width: modalWidth ?? 720 }}
             role='dialog'>
@@ -104,7 +104,7 @@ const Modal: FC<Props> = ({
                 onClick={onClose}
                 className={clsx(
                   styles.close,
-                  'flex h-[1.8rem] w-[1.8rem] items-center justify-center rounded-full bg-transparent text-[#9e9689] hover:border-transparent hover:bg-gray-200 hover:text-[#c3beb6] dark:hover:bg-[#232627]',
+                  'flex h-[1.8rem] w-[1.8rem] items-center justify-center rounded-full bg-transparent text-[#9e9689] hover:border-transparent hover:bg-gray-200 hover:text-[#c3beb6]',
                   closeClassName ?? ''
                 )}>
                 <IconX size={closeSize} />

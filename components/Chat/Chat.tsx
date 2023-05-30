@@ -305,127 +305,83 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
   }, [messagesEndRef]);
 
   return (
-    <div className={`h-full dark:bg-[#343541] w-full overflow-y-auto relative`}>
-      {!(serverSideApiKeyIsSet) ? (
-        <div className="mx-auto flex h-full w-[300px] flex-col justify-center space-y-6 sm:w-[600px]">
-          <div className="text-center text-4xl font-bold text-black dark:text-white">
-            Welcome to Chatbot UI
-          </div>
-          <div className="text-center text-lg text-black dark:text-white">
-            <div className="mb-8">{`Chatbot UI is an open source clone of OpenAI's ChatGPT UI.`}</div>
-            <div className="mb-2 font-bold">
-              Important: Chatbot UI is 100% unaffiliated with OpenAI.
-            </div>
-          </div>
-          <div className="text-center text-gray-500 dark:text-gray-400">
-            <div className="mb-2">
-              Chatbot UI allows you to plug in your API key to use this UI with
-              their API.
-            </div>
-            <div className="mb-2">
-              It is <span className="italic">only</span> used to communicate
-              with their API.
-            </div>
-            <div className="mb-2">
-              {t(
-                'Please set your OpenAI API key in the bottom left of the sidebar.',
+    <div className={`h-full w-full overflow-y-auto relative`}>
+      <div
+        className="max-h-full overflow-x-hidden"
+        ref={chatContainerRef}
+        onScroll={handleScroll}
+      >
+        {selectedConversation?.messages.length === 0 ? (
+          <>
+            <div className="text-gray-800 w-full md:max-w-2xl lg:max-w-3xl md:h-full md:flex md:flex-col px-6 pt-10 mx-auto">
+              <div className="text-center text-3xl font-semibold text-gray-800">
+                {models.length === 0 ? (
+                  <div>
+                    <Spinner size="16px" className="mx-auto" />
+                  </div>
+                ) : (
+                  'Chatbot UI'
+                )}
+              </div>
+
+              {models.length > 0 && (
+                <div className="flex h-full flex-col space-y-4 rounded-lg border border-neutral-200 p-4">
+                  <SystemPrompt
+                    conversation={selectedConversation}
+                    prompts={prompts}
+                    onChangePrompt={(prompt) =>
+                      handleUpdateConversation(selectedConversation, {
+                        key: 'prompt',
+                        value: prompt,
+                      })
+                    }
+                  />
+                </div>
               )}
             </div>
-            <div>
-              {t("If you don't have an OpenAI API key, you can get one here: ")}
-              <a
-                href="https://platform.openai.com/account/api-keys"
-                target="_blank"
-                rel="noreferrer"
-                className="text-blue-500 hover:underline"
-              >
-                openai.com
-              </a>
-            </div>
-          </div>
-        </div>
-      ) : modelError ? (
-        <ErrorMessageDiv error={modelError} />
-      ) : (
-        <>
-          <div
-            className="max-h-full overflow-x-hidden"
-            ref={chatContainerRef}
-            onScroll={handleScroll}
-          >
-            {selectedConversation?.messages.length === 0 ? (
-              <>
-                <div className="text-gray-800 w-full md:max-w-2xl lg:max-w-3xl md:h-full md:flex md:flex-col px-6 dark:text-gray-100 pt-10 mx-auto">
-                  <div className="text-center text-3xl font-semibold text-gray-800 dark:text-gray-100">
-                    {models.length === 0 ? (
-                      <div>
-                        <Spinner size="16px" className="mx-auto" />
-                      </div>
-                    ) : (
-                      'Chatbot UI'
-                    )}
-                  </div>
+          </>
+        ) : (
+          <>
+            {selectedConversation?.messages.map((message, index) => (
+              <MemoizedChatMessage
+                key={index}
+                message={message}
+                messageIndex={index}
+                onEdit={(editedMessage) => {
+                  setCurrentMessage(editedMessage);
+                  handleSend(
+                    editedMessage,
+                    selectedConversation?.messages.length - index,
+                  );
+                }}
+              />
+            ))}
 
-                  {models.length > 0 && (
-                    <div className="flex h-full flex-col space-y-4 rounded-lg border border-neutral-200 p-4 dark:border-neutral-600">
-                      <SystemPrompt
-                        conversation={selectedConversation}
-                        prompts={prompts}
-                        onChangePrompt={(prompt) =>
-                          handleUpdateConversation(selectedConversation, {
-                            key: 'prompt',
-                            value: prompt,
-                          })
-                        }
-                      />
-                    </div>
-                  )}
-                </div>
-              </>
-            ) : (
-              <>
-                {selectedConversation?.messages.map((message, index) => (
-                  <MemoizedChatMessage
-                    key={index}
-                    message={message}
-                    messageIndex={index}
-                    onEdit={(editedMessage) => {
-                      setCurrentMessage(editedMessage);
-                      handleSend(
-                        editedMessage,
-                        selectedConversation?.messages.length - index,
-                      );
-                    }}
-                  />
-                ))}
+            {loading && <ChatLoader />}
 
-                {loading && <ChatLoader />}
+            <div
+              className="w-full h-[200px]"
+              ref={messagesEndRef}
+            />
+          </>
+        )}
+      </div>
 
-                <div
-                  className="w-full h-[200px] dark:bg-[#343541]"
-                  ref={messagesEndRef}
-                />
-              </>
-            )}
-          </div>
-
-          <ChatInput
-            stopConversationRef={stopConversationRef}
-            textareaRef={textareaRef}
-            onSend={(message) => {
-              setCurrentMessage(message);
-              handleSend(message, 0);
-            }}
-            onScrollDownClick={handleScrollDown}
-            onRegenerate={() => {
-              if (currentMessage) {
-                handleSend(currentMessage, 2, null);
-              }
-            }}
-            showScrollDownButton={showScrollDownButton}
-          />
-        </>
-      )}
+      <ChatInput
+        stopConversationRef={stopConversationRef}
+        textareaRef={textareaRef}
+        onSend={(message) => {
+          setCurrentMessage(message);
+          handleSend(message, 0);
+        }}
+        onScrollDownClick={handleScrollDown}
+        onRegenerate={() => {
+          if (currentMessage) {
+            handleSend(currentMessage, 2, null);
+          }
+        }}
+        showScrollDownButton={showScrollDownButton}
+      />
     </div>
   );
 });

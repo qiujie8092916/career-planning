@@ -328,9 +328,9 @@ const Home = ({
         <div className='relative flex h-full max-w-full flex-1'>
           <div className='flex h-full max-w-full flex-1 flex-col overflow-hidden'>
             <main
-              className={`relative h-full w-full transition-width flex flex-col overflow-hidden items-stretch flex-1 text-sm text-white dark:text-white ${lightMode}`}
+              className={`relative h-full w-full transition-width flex flex-col overflow-hidden items-stretch flex-1 text-sm text-white ${lightMode}`}
             >
-              <div className="absolute top-0 w-full sm:hidden z-10 text-sm text-white dark:text-white">
+              <div className="absolute top-0 w-full sm:hidden z-10 text-sm text-white">
                 <Navbar />
               </div>
 
