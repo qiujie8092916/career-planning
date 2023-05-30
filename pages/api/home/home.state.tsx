@@ -4,7 +4,7 @@ import { OpenAIModel, OpenAIModelID } from '@/types/openai';
 import { Prompt } from '@/types/prompt';
 
 export interface HomeInitialState {
-  apiKey: string;
+  scrollHeight: number;
   loading: boolean;
   lightMode: 'light' | 'dark';
   messageIsStreaming: boolean;
@@ -24,7 +24,7 @@ export interface HomeInitialState {
 }
 
 export const initialState: HomeInitialState = {
-  apiKey: '',
+  scrollHeight: 0,
   loading: false,
   lightMode: 'dark',
   messageIsStreaming: false,

@@ -28,6 +28,7 @@
     "react-hot-toast": "^2.4.1",
     "react-i18next": "^12.2.0",
     "react-markdown": "^8.0.5",
+    "react-particles": "^2.9.3",
     "react-query": "^3.39.3",
     "react-syntax-highlighter": "^15.5.0",
     "react-use": "^17.4.0",
@@ -35,6 +36,8 @@
     "remark-gfm": "^3.0.1",
     "remark-math": "^5.1.1",
     "sass": "^1.62.1",
+    "tsparticles": "^2.9.3",
+    "tsparticles-engine": "^2.9.3",
     "uuid": "^9.0.0"
   },
   "devDependencies": {

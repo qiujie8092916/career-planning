@@ -13,7 +13,7 @@ function App({ Component, pageProps }: AppProps<{}>) {
   const queryClient = new QueryClient();
 
   return (
-    <div className={inter.className}>
+    <div className={inter.className} style={{ height: '100%' }}>
       <Toaster />
       <QueryClientProvider client={queryClient}>
         <Component {...pageProps} />

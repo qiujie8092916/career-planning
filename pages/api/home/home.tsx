@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import {useEffect, useRef, useCallback, useMemo} from 'react';
 import { useQuery } from 'react-query';
 
 import { GetServerSideProps } from 'next';
@@ -10,7 +10,10 @@ import { useCreateReducer } from '@/hooks/useCreateReducer';
 
 import useErrorService from '@/services/errorService';
 import useApiService from '@/services/useApiService';
-
+import Particles from "react-particles";
+import type { Engine } from "tsparticles-engine";
+import { loadFull } from "tsparticles";
+import { ISourceOptions } from "tsparticles-engine";
 import {
   cleanConversationHistory,
   cleanSelectedConversation,
@@ -28,7 +31,6 @@ import { KeyValuePair } from '@/types/data';
 import { OpenAIModelID, OpenAIModels, fallbackModelID } from '@/types/openai';
 
 import { Chat } from '@/components/Chat/Chat';
-import { Chatbar } from '@/components/Chatbar/Chatbar';
 import { Navbar } from '@/components/Mobile/Navbar';
 
 import HomeContext from './home.context';
@@ -38,13 +40,11 @@ import { v4 as uuidv4 } from 'uuid';
 
 interface Props {
   serverSideApiKeyIsSet: boolean;
-  serverSidePluginKeysSet: boolean;
   defaultModelId: OpenAIModelID;
 }
 
 const Home = ({
   serverSideApiKeyIsSet,
-  serverSidePluginKeysSet,
   defaultModelId,
 }: Props) => {
   const { t } = useTranslation('chat');
@@ -57,7 +57,6 @@ const Home = ({
 
   const {
     state: {
-      apiKey,
       lightMode,
       conversations,
       selectedConversation,
@@ -68,13 +67,13 @@ const Home = ({
   const stopConversationRef = useRef<boolean>(false);
 
   const { data, error, refetch } = useQuery(
-    ['GetModels', apiKey, serverSideApiKeyIsSet],
+    ['GetModels', '', serverSideApiKeyIsSet],
     ({ signal }) => {
-      if (!apiKey && !serverSideApiKeyIsSet) return null;
+      if (!serverSideApiKeyIsSet) return null;
 
       return getModels(
         {
-          key: apiKey,
+          key: '',
         },
         signal,
       );
@@ -164,12 +163,7 @@ const Home = ({
         field: 'serverSideApiKeyIsSet',
         value: serverSideApiKeyIsSet,
       });
-    serverSidePluginKeysSet &&
-      dispatch({
-        field: 'serverSidePluginKeysSet',
-        value: serverSidePluginKeysSet,
-      });
-  }, [defaultModelId, serverSideApiKeyIsSet, serverSidePluginKeysSet]);
+  }, [defaultModelId, serverSideApiKeyIsSet]);
 
   // ON LOAD --------------------------------------------
 
@@ -180,16 +174,6 @@ const Home = ({
         field: 'lightMode',
         value: settings.theme,
       });
-    }
-
-    const apiKey = localStorage.getItem('apiKey');
-
-    if (serverSideApiKeyIsSet) {
-      dispatch({ field: 'apiKey', value: '' });
-
-      localStorage.removeItem('apiKey');
-    } else if (apiKey) {
-      dispatch({ field: 'apiKey', value: apiKey });
     }
 
     if (window.innerWidth < 640) {
@@ -252,8 +236,73 @@ const Home = ({
     defaultModelId,
     dispatch,
     serverSideApiKeyIsSet,
-    serverSidePluginKeysSet,
   ]);
+
+  const particlesInit = useCallback(async (engine: Engine) => {
+    await loadFull(engine);
+  }, []);
+
+  const particlesOptions = useMemo(() => ({
+    particles: {
+      number: { value: 100, density: { enable: true, value_area: 800 } },
+      color: { value: "#333" },
+      shape: {
+        type: "circle",
+        stroke: { width: 0, color: "#000000" },
+        polygon: { nb_sides: 5 },
+        image: { src: "img/github.svg", width: 100, height: 100 },
+      },
+      opacity: {
+        value: 0.5,
+        random: false,
+        anim: { enable: false, speed: 1, opacity_min: 0.1, sync: false },
+      },
+      size: {
+        value: 3,
+        random: true,
+        anim: { enable: false, speed: 40, size_min: 0.1, sync: false },
+      },
+      line_linked: {
+        enable: true,
+        distance: 150,
+        color: "#aaa",
+        opacity: 0.4,
+        width: 1,
+      },
+      move: {
+        enable: true,
+        speed: 2,
+        direction: "none",
+        random: false,
+        straight: false,
+        out_mode: "out",
+        bounce: false,
+        attract: { enable: false, rotateX: 600, rotateY: 1200 },
+      },
+    },
+    interactivity: {
+      detect_on: "canvas",
+      events: {
+        onhover: { enable: true, mode: "grab" },
+        onclick: { enable: true, mode: "push" },
+        resize: true,
+      },
+      modes: {
+        grab: { distance: 200, line_linked: { opacity: 1 } },
+        bubble: {
+          distance: 400,
+          size: 40,
+          duration: 2,
+          opacity: 8,
+          speed: 2,
+        },
+        repulse: { distance: 200, duration: 0.4 },
+        push: { particles_nb: 4 },
+        remove: { particles_nb: 2 },
+      },
+    },
+    retina_detect: true,
+  }), [])
 
   return (
     <HomeContext.Provider
@@ -264,6 +313,7 @@ const Home = ({
         handleUpdateConversation,
       }}
     >
+      <Particles options={particlesOptions as ISourceOptions} init={particlesInit} />
       <Head>
         <title>Chatbot UI</title>
         <meta name="description" content="ChatGPT but better." />
@@ -273,26 +323,24 @@ const Home = ({
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      {selectedConversation && (
-        <main
-          className={`flex h-screen w-screen flex-col text-sm text-white dark:text-white ${lightMode}`}
-        >
-          <div className="fixed top-0 w-full sm:hidden">
-            <Navbar
-              selectedConversation={selectedConversation}
-              onNewConversation={handleNewConversation}
-            />
-          </div>
 
-          <div className="flex h-full w-full pt-[48px] sm:pt-0">
-            <Chatbar />
+      <div className='overflow-hidden w-full h-full relative flex z-0'>
+        <div className='relative flex h-full max-w-full flex-1'>
+          <div className='flex h-full max-w-full flex-1 flex-col overflow-hidden'>
+            <main
+              className={`relative h-full w-full transition-width flex flex-col overflow-hidden items-stretch flex-1 text-sm text-white dark:text-white ${lightMode}`}
+            >
+              <div className="absolute top-0 w-full sm:hidden z-10 text-sm text-white dark:text-white">
+                <Navbar />
+              </div>
 
-            <div className="flex flex-1">
-              <Chat stopConversationRef={stopConversationRef} />
-            </div>
+              <div className="pt-16 flex-1 overflow-hidden flex">
+                <Chat stopConversationRef={stopConversationRef} />
+              </div>
+            </main>
           </div>
-        </main>
-      )}
+        </div>
+      </div>
     </HomeContext.Provider>
   );
 };
@@ -307,13 +355,10 @@ export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
       process.env.DEFAULT_MODEL) ||
     fallbackModelID;
 
-  let serverSidePluginKeysSet = false;
-
   return {
     props: {
       serverSideApiKeyIsSet: !!process.env.OPENAI_API_KEY,
       defaultModelId,
-      serverSidePluginKeysSet,
       ...(await serverSideTranslations(locale ?? 'en', [
         'common',
         'chat',

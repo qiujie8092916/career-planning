@@ -18,6 +18,8 @@ interface Props {
   renderBody: ReactNode;
   renderFooter?: ReactNode;
   onClose: () => any;
+  closeClassName?: string;
+  closeSize?: number;
 }
 
 const Modal: FC<Props> = ({
@@ -30,6 +32,8 @@ const Modal: FC<Props> = ({
   title,
   renderBody,
   onClose,
+  closeClassName,
+  closeSize = 14
 }) => {
   const { t: modalTrans } = useTranslation('modal');
 
@@ -94,15 +98,16 @@ const Modal: FC<Props> = ({
             )}
             style={{ width: modalWidth ?? 720 }}
             role='dialog'>
-            {title && <div className={clsx(styles.header, headerClassName ?? '')}>
+            {title !== undefined && <div className={clsx(styles.header, headerClassName ?? '')}>
               {title}
               <button
                 onClick={onClose}
                 className={clsx(
                   styles.close,
                   'flex h-[1.8rem] w-[1.8rem] items-center justify-center rounded-full bg-transparent text-[#9e9689] hover:border-transparent hover:bg-gray-200 hover:text-[#c3beb6] dark:hover:bg-[#232627]',
+                  closeClassName ?? ''
                 )}>
-                <IconX size={14} />
+                <IconX size={closeSize} />
               </button>
             </div>}
             <div className={clsx(styles.body, bodyClassName ?? '')}>
