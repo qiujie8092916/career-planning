@@ -1,34 +1,20 @@
-import {
-  MutableRefObject,
-  memo,
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import {memo, MutableRefObject, useCallback, useContext, useEffect, useRef, useState,} from 'react';
 import toast from 'react-hot-toast';
 
-import { useTranslation } from 'next-i18next';
+import {useTranslation} from 'next-i18next';
 
-import { getEndpoint } from '@/utils/app/api';
-import {
-  saveConversation,
-  saveConversations,
-  updateConversation,
-} from '@/utils/app/conversation';
-import { throttle } from '@/utils/data/throttle';
+import {getEndpoint} from '@/utils/app/api';
+import {saveConversation, saveConversations, updateConversation,} from '@/utils/app/conversation';
+import {throttle} from '@/utils/data/throttle';
 
-import { ChatBody, Conversation, Message } from '@/types/chat';
+import {ChatBody, Conversation, Message} from '@/types/chat';
 
 import HomeContext from '@/pages/api/home/home.context';
 
-import Spinner from '../Spinner';
-import { ChatInput } from './ChatInput';
-import { ChatLoader } from './ChatLoader';
-import { ErrorMessageDiv } from './ErrorMessageDiv';
-import { SystemPrompt } from './SystemPrompt';
-import { MemoizedChatMessage } from './MemoizedChatMessage';
+import {ChatLoader} from './ChatLoader';
+import {Welcome} from './Welcome';
+import {MemoizedChatMessage} from './MemoizedChatMessage';
+import { MainInput } from './MainInput';
 
 interface Props {
   stopConversationRef: MutableRefObject<boolean>;
@@ -41,16 +27,12 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
     state: {
       selectedConversation,
       conversations,
-      models,
-      serverSideApiKeyIsSet,
-      modelError,
       loading,
-      prompts,
     },
-    handleUpdateConversation,
     dispatch: homeDispatch,
   } = useContext(HomeContext);
 
+  const [spaceholder, setSpaceholder] = useState<number>(200);
   const [currentMessage, setCurrentMessage] = useState<Message>();
   const [autoScrollEnabled, setAutoScrollEnabled] = useState<boolean>(true);
   const [showScrollDownButton, setShowScrollDownButton] =
@@ -312,34 +294,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
         onScroll={handleScroll}
       >
         {selectedConversation?.messages.length === 0 ? (
-          <>
-            <div className="text-gray-800 w-full md:max-w-2xl lg:max-w-3xl md:h-full md:flex md:flex-col px-6 pt-10 mx-auto">
-              <div className="text-center text-3xl font-semibold text-gray-800">
-                {models.length === 0 ? (
-                  <div>
-                    <Spinner size="16px" className="mx-auto" />
-                  </div>
-                ) : (
-                  'Chatbot UI'
-                )}
-              </div>
-
-              {models.length > 0 && (
-                <div className="flex h-full flex-col space-y-4 rounded-lg border border-neutral-200 p-4">
-                  <SystemPrompt
-                    conversation={selectedConversation}
-                    prompts={prompts}
-                    onChangePrompt={(prompt) =>
-                      handleUpdateConversation(selectedConversation, {
-                        key: 'prompt',
-                        value: prompt,
-                      })
-                    }
-                  />
-                </div>
-              )}
-            </div>
-          </>
+          <Welcome />
         ) : (
           <>
             {selectedConversation?.messages.map((message, index) => (
@@ -360,28 +315,28 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
             {loading && <ChatLoader />}
 
             <div
-              className="w-full h-[200px]"
+              className='w-full'
+              style={{
+                height: `${spaceholder}px`
+              }}
               ref={messagesEndRef}
             />
           </>
         )}
       </div>
 
-      <ChatInput
-        stopConversationRef={stopConversationRef}
-        textareaRef={textareaRef}
-        onSend={(message) => {
-          setCurrentMessage(message);
-          handleSend(message, 0);
-        }}
-        onScrollDownClick={handleScrollDown}
-        onRegenerate={() => {
-          if (currentMessage) {
-            handleSend(currentMessage, 2, null);
-          }
-        }}
-        showScrollDownButton={showScrollDownButton}
-      />
+      <div className="absolute bottom-0 left-0 w-full border-transparent bg-gradient-to-b from-transparent via-white to-white pt-6 md:pt-2 stretch gap-3 px-5 mt-4 flex flex-col last:pb-5 md:mt-[52px] md:last:pb-6 lg:px-auto lg:max-w-3xl">
+        <MainInput
+          handleSend={handleSend}
+          currentMessage={currentMessage}
+          setCurrentMessage={setCurrentMessage}
+          handleScrollDown={handleScrollDown}
+          showScrollDownButton={showScrollDownButton}
+          textareaRef={textareaRef}
+          stopConversationRef={stopConversationRef}
+          setSpaceholder={setSpaceholder}
+        />
+      </div>
     </div>
   );
 });

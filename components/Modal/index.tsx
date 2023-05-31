@@ -94,7 +94,7 @@ const Modal: FC<Props> = ({
             ref={modalRef}
             className={clsx(
               modalClassName ?? '',
-              'inline-block transform overflow-hidden rounded-lg border-gray-300 bg-[#eff3f8] text-left align-bottom text-[#0f172a] shadow-xl transition-all sm:my-8 sm:w-full sm:align-middle',
+              'inline-block transform overflow-hidden rounded-lg border-gray-300 bg-white text-left align-bottom text-[#0f172a] shadow-xl transition-all sm:my-8 sm:w-full sm:align-middle',
             )}
             style={{ width: modalWidth ?? 720 }}
             role='dialog'>

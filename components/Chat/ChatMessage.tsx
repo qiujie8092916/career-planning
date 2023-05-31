@@ -74,15 +74,15 @@ export const ChatMessage: FC<Props> = memo(({ message, messageIndex, onEdit }) =
 
   return (
     <div
-      className='group md:px-4 border-b border-black/10 text-gray-800'
+      className='group md:px-4 border-black/10 text-gray-800'
       style={{ overflowWrap: 'anywhere' }}
     >
-      <div className="relative m-auto flex p-4 text-base md:max-w-2xl md:gap-6 md:py-6 lg:max-w-2xl lg:px-0 xl:max-w-3xl">
-        <div className="min-w-[40px] text-right font-bold">
+      <div className="relative m-auto flex flex-col p-4 text-base md:max-w-2xl md:gap-6 py-6 lg:max-w-2xl lg:px-0 xl:max-w-3xl">
+        <div className="w-full text-left font-black mb-3">
           {message.role === 'assistant' ? (
-            <IconRobot size={30} />
+            '>> 生涯规划师'
           ) : (
-            <IconUser size={30} />
+            '>> 我'
           )}
         </div>
 
