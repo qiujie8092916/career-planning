@@ -1,3 +1,5 @@
+import queryString from "query-string";
+
 export type RequestModel = {
   params?: object;
   headers?: object;
@@ -14,7 +16,7 @@ export const useFetch = () => {
     request: any,
     signal?: AbortSignal,
   ) => {
-    const requestUrl = request?.params ? `${url}${request.params}` : url;
+    const requestUrl = request?.params ? `${url}?${queryString.stringify(request.params)}` : url;
 
     const requestBody = request?.body
       ? request.body instanceof FormData
@@ -26,8 +28,8 @@ export const useFetch = () => {
       ...(request?.headers
         ? request.headers
         : request?.body && request.body instanceof FormData
-        ? {}
-        : { 'Content-type': 'application/json' }),
+          ? {}
+          : { 'Content-type': 'application/json' }),
     };
 
     return fetch(requestUrl, { ...requestBody, headers, signal })
@@ -45,8 +47,8 @@ export const useFetch = () => {
             contentType?.indexOf('text/plain') !== -1)
             ? response.json()
             : contentDisposition?.indexOf('attachment') !== -1
-            ? response.blob()
-            : response;
+              ? response.blob()
+              : response;
 
         return result;
       })
@@ -56,33 +58,33 @@ export const useFetch = () => {
         const errResult =
           contentType && contentType?.indexOf('application/problem+json') !== -1
             ? await err.json()
-            : err;
+            : contentType && contentType?.indexOf('text/plain') !== -1 ? new Error(await err.text()) : err;
 
         throw errResult;
       });
   };
 
   return {
-    get: async <T>(url: string, request?: RequestModel): Promise<T> => {
-      return handleFetch(url, { ...request, method: 'get' });
+    get: async <T>(url: string, request?: RequestModel, signal?: AbortSignal): Promise<T> => {
+      return handleFetch(url, { ...request, method: 'get' }, signal);
     },
     post: async <T>(
       url: string,
-      request?: RequestWithBodyModel,
+      request?: RequestWithBodyModel, signal?: AbortSignal
     ): Promise<T> => {
-      return handleFetch(url, { ...request, method: 'post' });
+      return handleFetch(url, { ...request, method: 'post' }, signal);
     },
-    put: async <T>(url: string, request?: RequestWithBodyModel): Promise<T> => {
-      return handleFetch(url, { ...request, method: 'put' });
+    put: async <T>(url: string, request?: RequestWithBodyModel, signal?: AbortSignal): Promise<T> => {
+      return handleFetch(url, { ...request, method: 'put' }, signal);
     },
     patch: async <T>(
       url: string,
-      request?: RequestWithBodyModel,
+      request?: RequestWithBodyModel, signal?: AbortSignal
     ): Promise<T> => {
-      return handleFetch(url, { ...request, method: 'patch' });
+      return handleFetch(url, { ...request, method: 'patch' }, signal);
     },
-    delete: async <T>(url: string, request?: RequestModel): Promise<T> => {
-      return handleFetch(url, { ...request, method: 'delete' });
+    delete: async <T>(url: string, request?: RequestModel, signal?: AbortSignal): Promise<T> => {
+      return handleFetch(url, { ...request, method: 'delete' }, signal);
     },
   };
 };

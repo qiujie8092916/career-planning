@@ -13,8 +13,10 @@ import HomeContext from '@/pages/api/home/home.context';
 
 import {ChatLoader} from './ChatLoader';
 import {Welcome} from './Welcome';
-import {MemoizedChatMessage} from './MemoizedChatMessage';
+import { MemoizedChatMessage } from './MemoizedChatMessage';
 import { MainInput } from './MainInput';
+import useRecommands from "@/hooks/useRecommands";
+
 
 interface Props {
   stopConversationRef: MutableRefObject<boolean>;
@@ -31,6 +33,8 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
     },
     dispatch: homeDispatch,
   } = useContext(HomeContext);
+
+  const { fetchRecommands } = useRecommands();
 
   const [spaceholder, setSpaceholder] = useState<number>(200);
   const [currentMessage, setCurrentMessage] = useState<Message>();
@@ -164,6 +168,12 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
               });
             }
           }
+
+          // chatting end
+          if (updatedConversation.messages.length > 1) {
+            fetchRecommands(updatedConversation.messages.slice(-2))
+          }
+
           saveConversation(updatedConversation);
           const updatedConversations: Conversation[] = conversations.map(
             (conversation) => {
@@ -328,12 +338,10 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
       <div className="absolute bottom-0 left-0 w-full border-transparent bg-gradient-to-b from-transparent via-white to-white pt-6 md:pt-2 stretch gap-3 px-5 mt-4 flex flex-col last:pb-5 md:mt-[52px] md:last:pb-6 lg:px-auto lg:max-w-3xl">
         <MainInput
           handleSend={handleSend}
-          currentMessage={currentMessage}
           setCurrentMessage={setCurrentMessage}
           handleScrollDown={handleScrollDown}
           showScrollDownButton={showScrollDownButton}
           textareaRef={textareaRef}
-          stopConversationRef={stopConversationRef}
           setSpaceholder={setSpaceholder}
         />
       </div>

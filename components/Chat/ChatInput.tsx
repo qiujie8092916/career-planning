@@ -1,44 +1,43 @@
 import {
   IconArrowDown,
-  IconPlayerStop,
-  IconRepeat,
   IconSend,
 } from '@tabler/icons-react';
 import {
-  MutableRefObject,
+  Dispatch,
+  MutableRefObject, SetStateAction,
   useContext,
   useEffect,
   useRef,
   useState,
 } from 'react';
-
+import clsx from 'clsx';
 import { useTranslation } from 'next-i18next';
 
 import { Message } from '@/types/chat';
 
 import HomeContext from '@/pages/api/home/home.context';
+import { useMount } from "react-use";
+import useRecommands from "@/hooks/useRecommands";
 
 interface Props {
+  setSpaceholder: Dispatch<SetStateAction<number>>;
   onSend: (message: Message) => void;
-  onRegenerate: () => void;
   onScrollDownClick: () => void;
-  stopConversationRef: MutableRefObject<boolean>;
   textareaRef: MutableRefObject<HTMLTextAreaElement | null>;
   showScrollDownButton: boolean;
 }
 
 export const ChatInput = ({
+  setSpaceholder,
   onSend,
-  onRegenerate,
   onScrollDownClick,
-  stopConversationRef,
   textareaRef,
   showScrollDownButton,
 }: Props) => {
   const { t } = useTranslation('chat');
 
   const {
-    state: { selectedConversation, messageIsStreaming, prompts },
+    state: { selectedConversation, messageIsStreaming, recommendData },
   } = useContext(HomeContext);
 
   const [content, setContent] = useState<string>();
@@ -81,25 +80,6 @@ export const ChatInput = ({
     }
   };
 
-  const handleStopConversation = () => {
-    stopConversationRef.current = true;
-    setTimeout(() => {
-      stopConversationRef.current = false;
-    }, 1000);
-  };
-
-  const parseVariables = (content: string) => {
-    const regex = /{{(.*?)}}/g;
-    const foundVariables = [];
-    let match;
-
-    while ((match = regex.exec(content)) !== null) {
-      foundVariables.push(match[1]);
-    }
-
-    return foundVariables;
-  };
-
   useEffect(() => {
     if (promptListRef.current) {
       promptListRef.current.scrollTop = activePromptIndex * 30;
@@ -116,27 +96,33 @@ export const ChatInput = ({
     }
   }, [content]);
 
+  useMount(() => setSpaceholder(80))
+
   return (
     <>
-      {messageIsStreaming && (
-        <button
-          className="mx-auto flex w-fit items-center gap-3 rounded border border-neutral-200 bg-white py-2 px-4 text-black hover:opacity-50 md:mb-0 md:mt-2"
-          onClick={handleStopConversation}
-        >
-          <IconPlayerStop size={16} /> {t('Stop Generating')}
-        </button>
-      )}
+      {/*{messageIsStreaming && (*/}
+      {/*  <button*/}
+      {/*    className="mx-auto flex w-fit items-center gap-3 rounded border border-neutral-200 bg-white py-2 px-4 text-black hover:opacity-50 md:mb-0 md:mt-2"*/}
+      {/*    onClick={handleStopConversation}*/}
+      {/*  >*/}
+      {/*    <IconPlayerStop size={16} /> {t('Stop Generating')}*/}
+      {/*  </button>*/}
+      {/*)}*/}
 
-      {!messageIsStreaming &&
-        selectedConversation &&
-        selectedConversation.messages.length > 0 && (
-          <button
-            className="mx-auto flex w-fit items-center gap-3 rounded border border-neutral-200 bg-white py-2 px-4 text-black hover:opacity-50 md:mb-0 md:mt-2"
-            onClick={onRegenerate}
-          >
-            <IconRepeat size={16} /> {t('Regenerate response')}
-          </button>
-        )}
+      {/*{recommendData.length ? (*/}
+      {/*  <div className='text-xs text-gray-800 dark:text-gray-100 flex justify-start'>*/}
+      {/*    <div className={clsx('pointer-events-auto w-full overflow-x-auto whitespace-nowrap')}>*/}
+      {/*      {recommendData.map(recommand => (*/}
+      {/*        <div key={recommand} onClick={() => setContent(recommand)} className='inline-block max-w-[15rem] mr-4 hover:opacity-100 hover:border-gray-100 opacity-90 px-4 py-1.5 rounded-2xl border dark:border-gray-400 bg-gray-50 dark:bg-[#444654] cursor-pointer truncate'>{recommand}</div>*/}
+      {/*      ))}*/}
+      {/*    </div>*/}
+      {/*  </div>*/}
+      {/*) : null}*/}
+
+      {recommendData.length ? (
+        <div className='text-base'>
+        </div>
+      ): null}
 
       <div className="relative flex w-full flex-grow flex-col rounded-md border border-black/10 bg-white shadow-[0_0_10px_rgba(0,0,0,0.10)]">
         <textarea

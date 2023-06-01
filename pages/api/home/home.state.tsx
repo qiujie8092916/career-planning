@@ -3,7 +3,12 @@ import { ErrorMessage } from '@/types/error';
 import { OpenAIModel, OpenAIModelID } from '@/types/openai';
 import { Prompt } from '@/types/prompt';
 
+export interface UserData { }
+
 export interface HomeInitialState {
+  userData: UserData | null;
+  recommendLoading: boolean;
+  recommendData: string[];
   scrollHeight: number;
   loading: boolean;
   lightMode: 'light' | 'dark';
@@ -24,6 +29,9 @@ export interface HomeInitialState {
 }
 
 export const initialState: HomeInitialState = {
+  userData: null,
+  recommendLoading: false,
+  recommendData: [],
   scrollHeight: 0,
   loading: false,
   lightMode: 'dark',
