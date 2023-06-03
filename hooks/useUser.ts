@@ -17,30 +17,33 @@ const useUser = () => {
     dispatch: homeDispatch,
   } = useContext(HomeContext);
 
-  const [loading, setLoading] = useState<boolean>(false);
+  const [getUserLoading, setGetUserLoading] = useState<boolean>(false);
+  const [postUserLoading, setPostUserLoading] = useState<boolean>(false);
 
-  const getUser = useCallback(
-    () => {
+  const handlerUser = useCallback(
+    (payload?: Record<string, any>) => {
       return fetchService.post<UserData>(`/api/userData`, {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
+        body: payload,
       });
     },
     [fetchService],
   );
 
   const fetchUserData = async () => {
-    setLoading(true);
+    setGetUserLoading(true);
     try {
-      const userData = await getUser();
+      const userData = await handlerUser({});
 
       homeDispatch({
         field: 'userData',
         value: null,
       });
 
-      setLoading(false);
+      setGetUserLoading(false);
 
       return userData;
     } catch (e: any) {
@@ -49,12 +52,26 @@ const useUser = () => {
       //   value: null,
       // });
       // toast.error(`获取用户信息失败, ${e}`);
-      setLoading(false);
+      setGetUserLoading(false);
       throw new Error(e)
     }
   };
 
-  return { loading, fetchUserData };
+  const submitUserData = async (payload: Record<string, any>) => {
+    setPostUserLoading(true);
+    try {
+      const initSubmit = await handlerUser(payload);
+
+      setPostUserLoading(false);
+
+      return initSubmit;
+    } catch (e: any) {
+      setPostUserLoading(false);
+      throw new Error(e)
+    }
+  }
+
+  return { getUserLoading, postUserLoading, fetchUserData, submitUserData };
 };
 
 export default useUser;

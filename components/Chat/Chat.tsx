@@ -1,22 +1,36 @@
-import {memo, MutableRefObject, useCallback, useContext, useEffect, useRef, useState,} from 'react';
+import {
+  MutableRefObject,
+  memo,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import toast from 'react-hot-toast';
+import { useMount } from 'react-use';
 
-import {useTranslation} from 'next-i18next';
+import { useTranslation } from 'next-i18next';
 
-import {getEndpoint} from '@/utils/app/api';
-import {saveConversation, saveConversations, updateConversation,} from '@/utils/app/conversation';
-import {throttle} from '@/utils/data/throttle';
+import useRecommands from '@/hooks/useRecommands';
+import useUser from '@/hooks/useUser';
 
-import {ChatBody, Conversation, Message} from '@/types/chat';
+import { getEndpoint } from '@/utils/app/api';
+import {
+  saveConversation,
+  saveConversations,
+  updateConversation,
+} from '@/utils/app/conversation';
+import { throttle } from '@/utils/data/throttle';
+
+import { ChatBody, Conversation, Message } from '@/types/chat';
 
 import HomeContext from '@/pages/api/home/home.context';
 
-import {ChatLoader} from './ChatLoader';
-import {Welcome} from './Welcome';
-import { MemoizedChatMessage } from './MemoizedChatMessage';
+import { ChatLoader } from './ChatLoader';
 import { MainInput } from './MainInput';
-import useRecommands from "@/hooks/useRecommands";
-
+import { MemoizedChatMessage } from './MemoizedChatMessage';
+import { Welcome } from './Welcome';
 
 interface Props {
   stopConversationRef: MutableRefObject<boolean>;
@@ -26,15 +40,13 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
   const { t } = useTranslation('chat');
 
   const {
-    state: {
-      selectedConversation,
-      conversations,
-      loading,
-    },
+    state: { selectedConversation, conversations, loading },
     dispatch: homeDispatch,
   } = useContext(HomeContext);
 
   const { fetchRecommands } = useRecommands();
+
+  const { fetchUserData } = useUser();
 
   const [spaceholder, setSpaceholder] = useState<number>(200);
   const [currentMessage, setCurrentMessage] = useState<Message>();
@@ -171,7 +183,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
 
           // chatting end
           if (updatedConversation.messages.length > 1) {
-            fetchRecommands(updatedConversation.messages.slice(-2))
+            fetchRecommands(updatedConversation.messages.slice(-2));
           }
 
           saveConversation(updatedConversation);
@@ -222,11 +234,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
         }
       }
     },
-    [
-      conversations,
-      selectedConversation,
-      stopConversationRef,
-    ],
+    [conversations, selectedConversation, stopConversationRef],
   );
 
   const handleScroll = () => {
@@ -245,8 +253,8 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
 
       homeDispatch({
         field: 'scrollHeight',
-        value: scrollTop
-      })
+        value: scrollTop,
+      });
     }
   };
 
@@ -296,6 +304,10 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
     };
   }, [messagesEndRef]);
 
+  useMount(() => {
+    fetchUserData();
+  });
+
   return (
     <div className={`h-full w-full overflow-y-auto relative`}>
       <div
@@ -325,9 +337,9 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
             {loading && <ChatLoader />}
 
             <div
-              className='w-full'
+              className="w-full"
               style={{
-                height: `${spaceholder}px`
+                height: `${spaceholder}px`,
               }}
               ref={messagesEndRef}
             />

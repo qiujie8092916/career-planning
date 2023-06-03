@@ -4,6 +4,7 @@ export type RequestModel = {
   params?: object;
   headers?: object;
   signal?: AbortSignal;
+  credentials?: RequestCredentials;
 };
 
 export type RequestWithBodyModel = RequestModel & {
