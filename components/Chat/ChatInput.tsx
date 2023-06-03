@@ -1,23 +1,21 @@
-import {
-  IconArrowDown,
-  IconSend,
-} from '@tabler/icons-react';
+import { IconArrowDown, IconChevronDown, IconSend } from '@tabler/icons-react';
 import {
   Dispatch,
-  MutableRefObject, SetStateAction,
+  MutableRefObject,
+  SetStateAction,
   useContext,
   useEffect,
   useRef,
   useState,
 } from 'react';
-import clsx from 'clsx';
+
 import { useTranslation } from 'next-i18next';
 
 import { Message } from '@/types/chat';
 
 import HomeContext from '@/pages/api/home/home.context';
-import { useMount } from "react-use";
-import useRecommands from "@/hooks/useRecommands";
+
+import clsx from 'clsx';
 
 interface Props {
   setSpaceholder: Dispatch<SetStateAction<number>>;
@@ -42,6 +40,7 @@ export const ChatInput = ({
 
   const [content, setContent] = useState<string>();
   const [activePromptIndex, setActivePromptIndex] = useState(0);
+  const [expansionRecommend, setExpansionRecommend] = useState<boolean>(false);
 
   const promptListRef = useRef<HTMLUListElement | null>(null);
 
@@ -96,7 +95,9 @@ export const ChatInput = ({
     }
   }, [content]);
 
-  useMount(() => setSpaceholder(80))
+  useEffect(() => {
+    setSpaceholder(recommendData.length ? 130 : 80);
+  }, [recommendData]);
 
   return (
     <>
@@ -120,9 +121,41 @@ export const ChatInput = ({
       {/*) : null}*/}
 
       {recommendData.length ? (
-        <div className='text-base'>
+        <div
+          className={clsx(
+            `py-2 text-black text-sm px-4 rounded-md border border-black/10 bg-white shadow-[0_0_10px_rgba(0,0,0,0.10)]`,
+          )}
+          onClick={() => setExpansionRecommend(!expansionRecommend)}
+        >
+          <div className='h-[18px] flex justify-between items-center text-[#3C3C3C]'>
+            参考问题
+            <div
+              className={expansionRecommend ? 'transform rotate-180' : ''}
+            >
+              <IconChevronDown size={14} />
+            </div>
+          </div>
+          {
+            expansionRecommend && (
+              <div className='text-xs text-gray-800 pt-2 dark:text-gray-100 flex items-start flex-col gap-3'>
+                {
+                  recommendData.map(recommand => (
+                    <div
+                      key={recommand}
+                      onClick={() => {
+                        setContent(recommand);
+                      }}
+                      className='hover:opacity-100 hover:border-gray-100 opacity-90 px-4 py-1.5 rounded-xl border dark:border-gray-400 bg-gray-50 dark:bg-[#444654] cursor-pointer truncate'
+                    >
+                      {recommand}
+                    </div>
+                  ))
+                }
+              </div>
+            )
+          }
         </div>
-      ): null}
+      ) : null}
 
       <div className="relative flex w-full flex-grow flex-col rounded-md border border-black/10 bg-white shadow-[0_0_10px_rgba(0,0,0,0.10)]">
         <textarea

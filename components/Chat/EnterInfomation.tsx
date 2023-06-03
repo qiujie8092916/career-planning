@@ -3,6 +3,7 @@ import clsx from "clsx";
 import {useMount} from "react-use";
 import Spinner from '@/components/Spinner';
 import {QUERY_PROCESS_ENUM} from "@/utils/app/urlQuery";
+import toast from "react-hot-toast";
 
 interface Props {
   setSpaceholder: Dispatch<SetStateAction<number>>;
@@ -40,7 +41,7 @@ const SUBJECT_MAP = new Map<SUBJECT_ENUM, string>([
 // ])
 
 export const EnterInfomation: FC<Props> = ({ setUrlQuery, setSpaceholder }) => {
-  const [subjectSelected, setSubjectSelected] = useState<SUBJECT_ENUM>();
+  const [subjectSelected, setSubjectSelected] = useState<SUBJECT_ENUM[]>([]);
   // const [provinceSelected, setProvinceSelected] = useState<PROVINCE_ENUM>();
   const [score, setScore] = useState<string>();
   const [rank, setRank] = useState<number>();
@@ -56,6 +57,15 @@ export const EnterInfomation: FC<Props> = ({ setUrlQuery, setSpaceholder }) => {
   }
 
   const submit = () => {
+    if(subjectSelected.length !== 3) {
+      return toast.error('请选择三门科目')
+    }
+    if(!score) {
+      return toast.error('请输入分数')
+    }
+    if(!rank) {
+      return toast.error('请输入排名')
+    }
     setLoading(true);
     setUrlQuery(QUERY_PROCESS_ENUM.CHAT)
   }
@@ -72,9 +82,16 @@ export const EnterInfomation: FC<Props> = ({ setUrlQuery, setSpaceholder }) => {
               key={key}
               className={clsx(
               'flex flex-1 justify-center h-9 items-center rounded-md border-solid border bg-[rgba(130,128,128,0.15)]',
-                subjectSelected === key ? 'text-[rgba(14,13,13,1)] border-[rgba(0,0,0,0.75)]' : 'text-[rgba(0,0,0,0.65)] border-[rgba(0,0,0,0.15)]'
+                subjectSelected.includes(key) ? 'text-[rgba(14,13,13,1)] border-[rgba(0,0,0,0.75)]' : 'text-[rgba(0,0,0,0.65)] border-[rgba(0,0,0,0.15)]'
               )}
-              onClick={() => setSubjectSelected(key)}
+              onClick={() => {
+                const index = subjectSelected.indexOf(key);
+                if(index > -1) {
+                  setSubjectSelected(subjectSelected.slice(0, index).concat(subjectSelected.slice(index + 1)))
+                } else {
+                  setSubjectSelected([...subjectSelected, key])
+                }
+              }}
             >{value}</div>
           ))}
         </div>
