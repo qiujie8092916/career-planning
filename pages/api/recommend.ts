@@ -1,13 +1,17 @@
 import { PROXY_API_HOST } from '@/utils/app/const';
-import { reverse_proxy } from '@/utils/server/reverse';
+import { reverse_proxy } from '@/utils/app/reverse';
 
 export const config = {
   runtime: 'edge',
 };
 
-const handler = async (req: Request): Promise<Response> => {
+const handler = async (req: any): Promise<Response> => {
   try {
-    const response = await reverse_proxy(req);
+    const response = await reverse_proxy({
+      method: 'GET',
+      headers: req.headers,
+      url: req.sourcePage,
+    });
 
     if (response.status !== 200) {
       console.error(
