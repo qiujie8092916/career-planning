@@ -45,7 +45,6 @@ const useUser = () => {
 
       commonhandlerUser(userData?.data);
 
-
       homeDispatch({
         field: 'getUserLoading',
         value: false,

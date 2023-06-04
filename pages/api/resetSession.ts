@@ -3,6 +3,9 @@ export const config = {
 };
 
 const handler = async (req: Request) => {
+  console.log('host', req.headers.get('host'))
+  console.log('origin', req.headers.get('origin'))
+  console.log('referer', req.headers.get('referer'))
   return new Response(
     JSON.stringify({}),
     {

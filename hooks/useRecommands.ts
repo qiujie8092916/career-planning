@@ -1,4 +1,4 @@
-import { useCallback, useContext, useState } from 'react';
+import { useCallback, useContext } from 'react';
 
 import { useFetch } from '@/hooks/useFetch';
 
