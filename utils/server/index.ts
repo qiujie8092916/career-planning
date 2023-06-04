@@ -1,7 +1,9 @@
+import { reverse_proxy } from '@/utils/app/reverse';
+
 import { Message } from '@/types/chat';
 import { OpenAIModel } from '@/types/openai';
 
-import { OPENAI_API_HOST } from '../app/const';
+import { OPENAI_API_HOST, PROXY_API_HOST } from '../app/const';
 
 import {
   ParsedEvent,
@@ -23,32 +25,20 @@ export class OpenAIError extends Error {
   }
 }
 
-export const OpenAIStream = async (
-  model: OpenAIModel,
-  systemPrompt: string,
-  key: string,
-  messages: Message[],
-) => {
-  let url = `${OPENAI_API_HOST}/v1/chat/completions`;
-  const res = await fetch(url, {
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${key ? key : process.env.OPENAI_API_KEY}`,
-    },
+export const OpenAIStream = async ({
+  headers,
+  url,
+  body,
+}: {
+  headers: Headers;
+  url: string;
+  body: string;
+}) => {
+  const res = await reverse_proxy({
     method: 'POST',
-    body: JSON.stringify({
-      model: model.id,
-      messages: [
-        {
-          role: 'system',
-          content: systemPrompt,
-        },
-        ...messages,
-      ],
-      max_tokens: 1000,
-      temperature: 1,
-      stream: true,
-    }),
+    headers,
+    url,
+    body,
   });
 
   const encoder = new TextEncoder();

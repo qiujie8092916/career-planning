@@ -1,42 +1,26 @@
 import { useCallback } from 'react';
 
 import { useFetch } from '@/hooks/useFetch';
+import {OpenAIModelID, OpenAIModels} from "@/types/openai";
+import mock_models from "./mock_models";
+
+const models = mock_models.data
+  .map((model: any) => {
+    const model_name = model.id;
+    for (const [key, value] of Object.entries(OpenAIModelID)) {
+      if (value === model_name) {
+        return OpenAIModels[value];
+      }
+    }
+  })
+  .filter(Boolean);
 
 export interface GetModelsRequestProps {
   key: string;
 }
 
 const useApiService = () => {
-  const fetchService = useFetch();
-
-  // const getModels = useCallback(
-  // 	(
-  // 		params: GetManagementRoutineInstanceDetailedParams,
-  // 		signal?: AbortSignal
-  // 	) => {
-  // 		return fetchService.get<GetManagementRoutineInstanceDetailed>(
-  // 			`/v1/ManagementRoutines/${params.managementRoutineId}/instances/${params.instanceId
-  // 			}?sensorGroupIds=${params.sensorGroupId ?? ''}`,
-  // 			{
-  // 				signal,
-  // 			}
-  // 		);
-  // 	},
-  // 	[fetchService]
-  // );
-
-  const getModels = useCallback(
-    (params: GetModelsRequestProps, signal?: AbortSignal) => {
-      return fetchService.post<GetModelsRequestProps>(`/api/models`, {
-        body: { key: params.key },
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        signal,
-      });
-    },
-    [fetchService],
-  );
+  const getModels = () => models;
 
   return {
     getModels,

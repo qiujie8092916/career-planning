@@ -94,7 +94,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
         homeDispatch({ field: 'messageIsStreaming', value: true });
         const chatBody: ChatBody = {
           model: updatedConversation.model,
-          messages: updatedConversation.messages,
+          messages: updatedConversation.messages.slice(2),
           key: '',
           prompt: updatedConversation.prompt,
         };
@@ -110,6 +110,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
         const controller = new AbortController();
         const response = await fetch(endpoint, {
           method: 'POST',
+          credentials: 'include',
           headers: {
             'Content-Type': 'application/json',
           },
@@ -282,7 +283,9 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
   const throttledScrollDown = throttle(scrollDown, 250);
 
   useEffect(() => {
-    throttledScrollDown();
+    if (userStatus === QUERY_PROCESS_ENUM.CHAT) {
+      throttledScrollDown();
+    }
     selectedConversation &&
       setCurrentMessage(
         selectedConversation.messages[selectedConversation.messages.length - 2],
@@ -303,7 +306,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
       },
     );
     const messagesEndElement = messagesEndRef.current;
-    if (messagesEndElement && userStatus === QUERY_PROCESS_ENUM.CHAT) {
+    if (messagesEndElement) {
       observer.observe(messagesEndElement);
     }
     return () => {

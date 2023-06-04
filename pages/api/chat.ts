@@ -13,7 +13,7 @@ export const config = {
   runtime: 'edge',
 };
 
-const handler = async (req: Request): Promise<Response> => {
+const handler = async (req: any): Promise<Response> => {
   try {
     const { model, messages, key, prompt } = (await req.json()) as ChatBody;
 
@@ -47,10 +47,27 @@ const handler = async (req: Request): Promise<Response> => {
 
     encoding.free();
 
-    const stream = await OpenAIStream(model, promptToSend, key, messagesToSend);
+    const stream = await OpenAIStream({
+      headers: req.headers,
+      url: req.sourcePage,
+      body: JSON.stringify({
+        model: model.id,
+        messages: [
+          {
+            role: 'system',
+            content: promptToSend,
+          },
+          ...messages,
+        ],
+        max_tokens: 1000,
+        temperature: 1,
+        stream: true,
+      })
+    });
 
     return new Response(stream);
   } catch (error) {
+    console.log('error', error)
     console.error(error);
     if (error instanceof OpenAIError) {
       return new Response('Error', { status: 500, statusText: error.message });

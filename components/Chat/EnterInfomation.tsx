@@ -146,14 +146,14 @@ export const EnterInfomation: FC<Props> = ({ setSpaceholder }) => {
         </div>
         <div className="flex-1 flex-row gap-3 w-full flex flex-nowrap overflow-hidden">
           <input
-            className="focus:outline-0 min-w-0 flex flex-1 text-center h-9 rounded-md border-solid border border-[rgba(0,0,0,0.15)] bg-[rgba(130,128,128,0.15)]"
+            className="outline-none min-w-0 flex flex-1 text-center h-9 rounded-md border-solid border border-[rgba(0,0,0,0.15)] bg-[rgba(130,128,128,0.15)]"
             type="number"
             value={score}
             placeholder="分数"
             onChange={(e) => handleScoreChange(e.target.value)}
           />
           <input
-            className="focus:outline-0 min-w-0 flex flex-1 text-center h-9 rounded-md border-solid border border-[rgba(0,0,0,0.15)] bg-[rgba(130,128,128,0.15)]"
+            className="outline-none min-w-0 flex flex-1 text-center h-9 rounded-md border-solid border border-[rgba(0,0,0,0.15)] bg-[rgba(130,128,128,0.15)]"
             type="number"
             value={rank}
             placeholder="排名"
