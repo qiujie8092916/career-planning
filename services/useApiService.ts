@@ -20,7 +20,7 @@ export interface GetModelsRequestProps {
 }
 
 const useApiService = () => {
-  const getModels = () => models;
+  const getModels = (...args: any) => models;
 
   return {
     getModels,
