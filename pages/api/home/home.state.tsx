@@ -19,6 +19,7 @@ export interface UserData {
 }
 
 export interface HomeInitialState {
+  logoutLoading: boolean;
   getUserLoading: boolean,
   userStatus: QUERY_PROCESS_ENUM | null;
   userData: UserData | null | {};
@@ -44,6 +45,7 @@ export interface HomeInitialState {
 }
 
 export const initialState: HomeInitialState = {
+  logoutLoading: false,
   getUserLoading: false,
   userStatus: null,
   userData: null,

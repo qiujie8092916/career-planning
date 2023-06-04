@@ -34,6 +34,19 @@ const useUser = () => {
     [fetchService],
   );
 
+  const handlerLogout = useCallback(
+    (payload?: Record<string, any>) => {
+      return fetchService.post<{ data?: UserData }>(`/api/resetSession`, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: payload,
+      });
+    },
+    [fetchService],
+  );
+
   const fetchUserData = async () => {
     homeDispatch({
       field: 'getUserLoading',
@@ -149,7 +162,29 @@ const useUser = () => {
     }
   };
 
-  return { postUserLoading, fetchUserData, submitUserData };
+  const logout = async () => {
+    homeDispatch({
+      field: 'logoutLoading',
+      value: true,
+    });
+
+    try {
+      await handlerLogout();
+
+      homeDispatch({
+        field: 'logoutLoading',
+        value: false,
+      });
+    } catch (e: any) {
+      homeDispatch({
+        field: 'logoutLoading',
+        value: false,
+      });
+      throw new Error(e);
+    }
+  }
+
+  return { postUserLoading, fetchUserData, submitUserData, logout };
 };
 
 export default useUser;

@@ -20,7 +20,7 @@ interface Props {}
 export const Navbar: FC<Props> = () => {
   const fetchService = useFetch();
 
-  const { fetchUserData } = useUser();
+  const { fetchUserData, logout } = useUser();
 
   const [aboutModal, setAboutModal] = useState<boolean>(false);
 
@@ -45,10 +45,8 @@ export const Navbar: FC<Props> = () => {
         <div
           className="flex gap-2.5 items-center text-xl font-semibold"
           onClick={async () => {
-            await fetchService.post(`/api/resetSession`, {
-              credentials: 'include',
-            });
-            fetchUserData()
+            await logout();
+            fetchUserData();
           }}
         >
           {SITE_LOGO ? (
