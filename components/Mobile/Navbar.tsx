@@ -3,6 +3,8 @@ import { toast } from 'react-hot-toast';
 
 import Image from 'next/image';
 
+import { useFetch } from '@/hooks/useFetch';
+
 import { QQ_GROUP, SITE_LOGO, SITE_NAME } from '@/utils/data/const';
 
 import HomeContext from '@/pages/api/home/home.context';
@@ -11,10 +13,15 @@ import Modal from '@/components/Modal';
 
 import LOGO_PNG from '@/public/logo.png';
 import copy from 'copy-to-clipboard';
+import useUser from "@/hooks/useUser";
 
 interface Props {}
 
 export const Navbar: FC<Props> = () => {
+  const fetchService = useFetch();
+
+  const { fetchUserData } = useUser();
+
   const [aboutModal, setAboutModal] = useState<boolean>(false);
 
   const {
@@ -35,7 +42,15 @@ export const Navbar: FC<Props> = () => {
           backgroundColor: `rgba(255, 255, 255, ${scrollHeight / 100})`,
         }}
       >
-        <div className="flex gap-2.5 items-center text-xl font-semibold">
+        <div
+          className="flex gap-2.5 items-center text-xl font-semibold"
+          onClick={async () => {
+            await fetchService.post(`/api/resetSession`, {
+              credentials: 'include',
+            });
+            fetchUserData()
+          }}
+        >
           {SITE_LOGO ? (
             <img
               width={28}
