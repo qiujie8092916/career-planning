@@ -1,6 +1,3 @@
-import Spinner from "@/components/Spinner";
-import {SystemPrompt} from "@/components/Chat/SystemPrompt";
-
 export const Welcome = () => {
   return (
     <div className="text-xl leading-[1.875rem] text-gray-800 w-full h-full px-4 mt-[0.625rem]">

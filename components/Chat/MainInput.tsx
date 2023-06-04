@@ -1,4 +1,4 @@
-import { Dispatch, FC, RefObject, SetStateAction } from 'react';
+import {Dispatch, FC, RefObject, SetStateAction, useContext} from 'react';
 
 import { useRouter } from 'next/router';
 
@@ -8,6 +8,8 @@ import { Message } from '@/types/chat';
 
 import { ChatInput } from './ChatInput';
 import { EnterInfomation } from './EnterInfomation';
+import useUrlQuery from "@/hooks/useUrlQuery";
+import HomeContext from "@/pages/api/home/home.context";
 
 interface Props {
   handleSend: (
@@ -30,33 +32,22 @@ export const MainInput: FC<Props> = ({
   textareaRef,
   setSpaceholder,
 }) => {
-  const router = useRouter();
-  const { pathname, query } = router;
-  const { process } = query as { process?: QUERY_PROCESS_ENUM };
+  const {
+    state: { userStatus },
+  } = useContext(HomeContext);
 
-  const setUrlQuery = (value: any, key = 'process') => {
-    router.push({
-      pathname,
-      query: {
-        ...query,
-        [key]: value,
-      },
-    });
-  };
   const render = () => {
-    switch (process) {
-      default:
+    switch (userStatus) {
+      case null:
+      case QUERY_PROCESS_ENUM.REGISTER:
+      case QUERY_PROCESS_ENUM.LOGIN:
+        return null;
       case QUERY_PROCESS_ENUM.ENTER:
         return (
           <EnterInfomation
             setSpaceholder={setSpaceholder}
-            setUrlQuery={setUrlQuery}
           />
         );
-      case QUERY_PROCESS_ENUM.REGISTER:
-        return null;
-      case QUERY_PROCESS_ENUM.LOGIN:
-        return null;
       case QUERY_PROCESS_ENUM.CHAT:
         return (
           <ChatInput

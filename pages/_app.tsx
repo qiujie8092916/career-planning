@@ -13,7 +13,15 @@ function App({ Component, pageProps }: AppProps<{}>) {
   const queryClient = new QueryClient();
 
   return (
-    <div className={inter.className} style={{ height: '100%' }}>
+    <div
+      className={inter.className}
+      style={{
+        height: '100%',
+        backgroundImage: `url('/bg.png')`,
+        backgroundSize: '100%',
+        backgroundRepeat: 'repeat-y'
+      }}
+    >
       <Toaster />
       <QueryClientProvider client={queryClient}>
         <Component {...pageProps} />

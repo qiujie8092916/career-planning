@@ -313,7 +313,7 @@ const Home = ({
         handleUpdateConversation,
       }}
     >
-      <Particles options={particlesOptions as ISourceOptions} init={particlesInit} />
+      {/*<Particles options={particlesOptions as ISourceOptions} init={particlesInit} />*/}
       <Head>
         <title>Chatbot UI</title>
         <meta name="description" content="ChatGPT but better." />

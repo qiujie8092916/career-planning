@@ -2,11 +2,25 @@ import { Conversation, Message } from '@/types/chat';
 import { ErrorMessage } from '@/types/error';
 import { OpenAIModel, OpenAIModelID } from '@/types/openai';
 import { Prompt } from '@/types/prompt';
+import {QUERY_PROCESS_ENUM} from "@/utils/app/urlQuery";
 
-export interface UserData { }
+export interface UserData {
+  data_time_range: number;
+  college_count: number;
+  college_985_count: number;
+  college_211_count: number;
+  most_recommend: { value: string }[];
+  basic_info: {
+    location: string;
+    rank: number;
+    score: number;
+    subject: string;
+  };
+}
 
 export interface HomeInitialState {
-  userData: UserData | null;
+  userStatus: QUERY_PROCESS_ENUM | null;
+  userData: UserData | null | {};
   recommendLoading: boolean;
   recommendData: string[];
   scrollHeight: number;
@@ -29,6 +43,7 @@ export interface HomeInitialState {
 }
 
 export const initialState: HomeInitialState = {
+  userStatus: null,
   userData: null,
   recommendLoading: false,
   recommendData: [],

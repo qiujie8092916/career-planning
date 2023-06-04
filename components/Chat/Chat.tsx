@@ -1,36 +1,27 @@
-import {
-  MutableRefObject,
-  memo,
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import {memo, MutableRefObject, useCallback, useContext, useEffect, useRef, useState,} from 'react';
 import toast from 'react-hot-toast';
-import { useMount } from 'react-use';
+import {useMount} from 'react-use';
 
-import { useTranslation } from 'next-i18next';
+import {useTranslation} from 'next-i18next';
 
 import useRecommands from '@/hooks/useRecommands';
 import useUser from '@/hooks/useUser';
 
-import { getEndpoint } from '@/utils/app/api';
-import {
-  saveConversation,
-  saveConversations,
-  updateConversation,
-} from '@/utils/app/conversation';
-import { throttle } from '@/utils/data/throttle';
+import {getEndpoint} from '@/utils/app/api';
+import {saveConversation, saveConversations, updateConversation,} from '@/utils/app/conversation';
+import {throttle} from '@/utils/data/throttle';
 
-import { ChatBody, Conversation, Message } from '@/types/chat';
+import {ChatBody, Conversation, Message} from '@/types/chat';
 
 import HomeContext from '@/pages/api/home/home.context';
 
-import { ChatLoader } from './ChatLoader';
-import { MainInput } from './MainInput';
-import { MemoizedChatMessage } from './MemoizedChatMessage';
-import { Welcome } from './Welcome';
+import Spinner from '@/components/Spinner';
+
+import {ChatLoader} from './ChatLoader';
+import {MainInput} from './MainInput';
+import {Welcome} from './Welcome';
+import {UserInitData} from './UserInitData';
+import {QUERY_PROCESS_ENUM} from "@/utils/app/urlQuery";
 
 interface Props {
   stopConversationRef: MutableRefObject<boolean>;
@@ -40,13 +31,13 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
   const { t } = useTranslation('chat');
 
   const {
-    state: { selectedConversation, conversations, loading },
+    state: { selectedConversation, conversations, loading, userData, userStatus },
     dispatch: homeDispatch,
   } = useContext(HomeContext);
 
   const { fetchRecommands } = useRecommands();
 
-  const { fetchUserData } = useUser();
+  const { getUserLoading, fetchUserData } = useUser();
 
   const [spaceholder, setSpaceholder] = useState<number>(200);
   const [currentMessage, setCurrentMessage] = useState<Message>();
@@ -308,6 +299,17 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
     fetchUserData();
   });
 
+  const renderMainChat = () => {
+    switch (userStatus) {
+      case null:
+        return null
+      case QUERY_PROCESS_ENUM.ENTER:
+        return <Welcome/>
+      case QUERY_PROCESS_ENUM.CHAT:
+        return <UserInitData/>
+    }
+  }
+
   return (
     <div className={`h-full w-full overflow-y-auto relative`}>
       <div
@@ -315,36 +317,21 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
         ref={chatContainerRef}
         onScroll={handleScroll}
       >
-        {selectedConversation?.messages.length === 0 ? (
-          <Welcome />
-        ) : (
-          <>
-            {selectedConversation?.messages.map((message, index) => (
-              <MemoizedChatMessage
-                key={index}
-                message={message}
-                messageIndex={index}
-                onEdit={(editedMessage) => {
-                  setCurrentMessage(editedMessage);
-                  handleSend(
-                    editedMessage,
-                    selectedConversation?.messages.length - index,
-                  );
-                }}
-              />
-            ))}
+        {getUserLoading ? (
+          <div className="text-center text-3xl font-semibold text-gray-800 dark:text-gray-100">
+            <Spinner size="16px" className="mx-auto" />
+          </div>
+        ) : renderMainChat()}
 
-            {loading && <ChatLoader />}
+        {loading && <ChatLoader />}
 
-            <div
-              className="w-full"
-              style={{
-                height: `${spaceholder}px`,
-              }}
-              ref={messagesEndRef}
-            />
-          </>
-        )}
+        <div
+          className="w-full"
+          style={{
+            height: `${spaceholder}px`,
+          }}
+          ref={messagesEndRef}
+        />
       </div>
 
       <div className="absolute bottom-0 left-0 w-full border-transparent bg-gradient-to-b from-transparent via-white to-white pt-6 md:pt-2 stretch gap-3 px-5 mt-4 flex flex-col last:pb-5 md:mt-[52px] md:last:pb-6 lg:px-auto lg:max-w-3xl">
