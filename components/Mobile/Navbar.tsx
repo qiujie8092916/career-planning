@@ -1,12 +1,9 @@
-import { IconPlus } from '@tabler/icons-react';
 import { FC, useContext, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
 import Image from 'next/image';
 
 import { QQ_GROUP, SITE_LOGO, SITE_NAME } from '@/utils/data/const';
-
-import { Conversation } from '@/types/chat';
 
 import HomeContext from '@/pages/api/home/home.context';
 
@@ -39,13 +36,24 @@ export const Navbar: FC<Props> = () => {
         }}
       >
         <div className="flex gap-2.5 items-center text-xl font-semibold">
-          <Image
-            width={28}
-            height={28}
-            className="rounded-full"
-            alt="logo"
-            src={SITE_LOGO || LOGO_PNG}
-          />
+          {SITE_LOGO ? (
+            <img
+              width={28}
+              height={28}
+              className="rounded-full"
+              alt="logo"
+              src={SITE_LOGO}
+            />
+          ) : (
+            <Image
+              width={28}
+              height={28}
+              className="rounded-full"
+              alt="logo"
+              src={LOGO_PNG}
+            />
+          )}
+
           {SITE_NAME}
         </div>
         <button className="" onClick={() => setAboutModal(true)}>
