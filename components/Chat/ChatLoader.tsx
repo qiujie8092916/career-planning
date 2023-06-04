@@ -9,11 +9,11 @@ export const ChatLoader: FC<Props> = () => {
       className="group text-gray-800"
       style={{ overflowWrap: 'anywhere' }}
     >
-      <div className="m-auto flex gap-4 p-4 text-base md:max-w-2xl md:gap-6 md:py-6 lg:max-w-2xl lg:px-0 xl:max-w-3xl">
+      <div className="m-auto flex flex-col p-4 text-base md:max-w-2xl md:py-6 lg:max-w-2xl lg:px-0 xl:max-w-3xl">
         <div className="w-full text-left font-black mb-3">
           {'>> 生涯规划师'}
         </div>
-        <span className="animate-pulse cursor-default mt-1">▍</span>
+        <span className="animate-pulse cursor-default">▍</span>
       </div>
     </div>
   );
