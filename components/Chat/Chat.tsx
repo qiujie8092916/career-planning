@@ -47,7 +47,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
       selectedConversation,
       conversations,
       loading,
-      userData,
+      getUserLoading,
       userStatus,
     },
     dispatch: homeDispatch,
@@ -55,7 +55,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
 
   const { fetchRecommands } = useRecommands();
 
-  const { getUserLoading, fetchUserData } = useUser();
+  const { fetchUserData } = useUser();
 
   const [spaceholder, setSpaceholder] = useState<number>(200);
   const [currentMessage, setCurrentMessage] = useState<Message>();

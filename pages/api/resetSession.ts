@@ -1,13 +1,17 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import { setCookie } from '@/utils/server/cookies';
-
 export const config = {
   runtime: 'edge',
 };
 
-const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  setCookie(res, 'mpuid', '', { path: '/', maxAge: -1 });
-  res.end(res.getHeader('Set-Cookie'));
+const handler = async () => {
+  return new Response(
+    JSON.stringify({}),
+    {
+      status: 200,
+      headers: {
+        'Set-Cookie': 'mpuid=; Path=/; Max-Age=0; HttpOnly',
+      },
+    },
+  );
 };
 
 export default handler;

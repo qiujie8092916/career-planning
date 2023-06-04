@@ -16,11 +16,9 @@ export interface FetchUserRequestProps {}
 
 const useUser = () => {
   const fetchService = useFetch();
-  const { setUrlQuery } = useUrlQuery();
 
   const { dispatch: homeDispatch } = useContext(HomeContext);
 
-  const [getUserLoading, setGetUserLoading] = useState<boolean>(false);
   const [postUserLoading, setPostUserLoading] = useState<boolean>(false);
 
   const handlerUser = useCallback(
@@ -37,22 +35,28 @@ const useUser = () => {
   );
 
   const fetchUserData = async () => {
-    setGetUserLoading(true);
+    homeDispatch({
+      field: 'getUserLoading',
+      value: true,
+    });
+
     try {
       const userData = await handlerUser({});
 
       commonhandlerUser(userData?.data);
 
-      setGetUserLoading(false);
+
+      homeDispatch({
+        field: 'getUserLoading',
+        value: false,
+      });
 
       return userData;
     } catch (e: any) {
-      // homeDispatch({
-      //   field: 'userInfo',
-      //   value: null,
-      // });
-      // toast.error(`获取用户信息失败, ${e}`);
-      setGetUserLoading(false);
+      homeDispatch({
+        field: 'getUserLoading',
+        value: false,
+      });
       throw new Error(e);
     }
   };
@@ -146,7 +150,7 @@ const useUser = () => {
     }
   };
 
-  return { getUserLoading, postUserLoading, fetchUserData, submitUserData };
+  return { postUserLoading, fetchUserData, submitUserData };
 };
 
 export default useUser;
