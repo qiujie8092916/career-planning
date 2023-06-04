@@ -1,63 +1,58 @@
-import {useCallback, useContext, useState} from 'react';
+import { useCallback, useContext, useState } from 'react';
 
 import { useFetch } from '@/hooks/useFetch';
-import HomeContext from "@/pages/api/home/home.context";
-import {useUpdateEffect} from "react-use";
-import { Message } from "@/types/chat";
 
-let controller = new AbortController();
+import { Message } from '@/types/chat';
+
+import HomeContext from '@/pages/api/home/home.context';
 
 const useRecommands = () => {
-    const fetchService = useFetch();
+  const fetchService = useFetch();
 
-    const {
-        state: { selectedConversation },
-      dispatch: homeDispatch,
-    } = useContext(HomeContext);
+  const {
+    state: { selectedConversation },
+    dispatch: homeDispatch,
+  } = useContext(HomeContext);
 
-    const fetchRecommands = useCallback(async (messages: Message[]) => {
+  const fetchRecommands = useCallback(
+    async (messages?: Message[]) => {
+      homeDispatch({
+        field: 'recommendLoading',
+        value: true,
+      });
+      try {
+        const data = await fetchService.post<{ data?: { choices?: string[] } }>(
+          `/api/recommend`,
+          {
+            body: {
+              ...(messages && {
+                messages,
+              }),
+            },
+            credentials: 'include',
+          },
+        );
         homeDispatch({
-            field: 'recommendLoading',
-            value: true,
-        })
-        try {
-            const data = await fetchService.post<{ choices?: string[] }>(`/api/recommend`, {
-                body: {
-                    messages,
-                },
-            }, controller.signal);
-            homeDispatch({
-                field: 'recommendData',
-                value: data?.choices ?? [],
-            })
-        } catch (e) {
-            console.error('/api/recommend error', e)
-            homeDispatch({
-                field: 'recommendData',
-                value: [],
-            })
-        }
-
+          field: 'recommendData',
+          value: data?.data?.choices ?? [],
+        });
+      } catch (e) {
+        console.error('/api/recommend error', e);
         homeDispatch({
-            field: 'recommendLoading',
-            value: false,
-        })
-    }, [fetchService])
+          field: 'recommendData',
+          value: [],
+        });
+      }
 
-    useUpdateEffect(() => {
-        controller.abort();
-        homeDispatch({
-            field: 'recommendLoading',
-            value: false,
-        })
-        homeDispatch({
-            field: 'recommendData',
-            value: [],
-        })
-        controller = new AbortController()
-    }, [selectedConversation?.id])
+      homeDispatch({
+        field: 'recommendLoading',
+        value: false,
+      });
+    },
+    [fetchService, homeDispatch],
+  );
 
-    return { fetchRecommands };
+  return { fetchRecommands };
 };
 
 export default useRecommands;

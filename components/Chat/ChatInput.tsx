@@ -125,35 +125,31 @@ export const ChatInput = ({
           className={clsx(
             `py-2 text-black text-sm px-4 rounded-md border border-black/10 bg-white shadow-[0_0_10px_rgba(0,0,0,0.10)]`,
           )}
-          onClick={() => setExpansionRecommend(!expansionRecommend)}
         >
-          <div className='h-[18px] flex justify-between items-center text-[#3C3C3C]'>
+          <div
+            className="h-[18px] flex justify-between items-center text-[#3C3C3C]"
+            onClick={() => setExpansionRecommend(!expansionRecommend)}
+          >
             参考问题
-            <div
-              className={expansionRecommend ? 'transform rotate-180' : ''}
-            >
+            <div className={expansionRecommend ? 'transform rotate-180' : ''}>
               <IconChevronDown size={14} />
             </div>
           </div>
-          {
-            expansionRecommend && (
-              <div className='text-xs text-gray-800 pt-2 dark:text-gray-100 flex items-start flex-col gap-3'>
-                {
-                  recommendData.map(recommand => (
-                    <div
-                      key={recommand}
-                      onClick={() => {
-                        setContent(recommand);
-                      }}
-                      className='hover:opacity-100 hover:border-gray-100 opacity-90 px-4 py-1.5 rounded-xl border dark:border-gray-400 bg-gray-50 dark:bg-[#444654] cursor-pointer truncate'
-                    >
-                      {recommand}
-                    </div>
-                  ))
-                }
-              </div>
-            )
-          }
+          {expansionRecommend && (
+            <div className="text-xs text-gray-800 pt-2 dark:text-gray-100 flex items-start flex-col gap-3">
+              {recommendData.map((recommand) => (
+                <div
+                  key={recommand}
+                  onClick={() => {
+                    setContent(recommand);
+                  }}
+                  className="hover:opacity-100 hover:border-gray-100 opacity-90 px-4 py-1.5 rounded-xl border dark:border-gray-400 bg-gray-50 dark:bg-[#444654] cursor-pointer truncate"
+                >
+                  {recommand}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       ) : null}
 

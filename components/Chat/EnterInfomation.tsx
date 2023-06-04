@@ -46,34 +46,46 @@ export const EnterInfomation: FC<Props> = ({ setSpaceholder }) => {
   const { submitUserData, postUserLoading } = useUser();
 
   // const [provinceSelected, setProvinceSelected] = useState<PROVINCE_ENUM>();
-  const [score, setScore] = useState<string>();
+  const [score, setScore] = useState<number>();
   const [rank, setRank] = useState<number>();
-  const [subjectSelected, setSubjectSelected] = useState<SUBJECT_ENUM[]>([]);
+  const [subjectsSelected, setSubjectsSelected] = useState<SUBJECT_ENUM[]>([]);
+
+  // 实现一个函数，对传入的任意字符串，调用replace方法，将其转换为小数或者整数或者空字符串，最多保留两位小数
+  const transNumber = (value: string) => {
+    let s;
+    s = value.replace(/[^0-9\.]+/g, "");  // 去除非数字和小数点字符
+    if (s) {
+      s = +parseFloat(s).toFixed(2);
+    } else {
+      s = undefined;
+    }
+    return s
+  }
 
   const handleScoreChange = (value: string) => {
-    setScore(value.replace(/[^\u4e00-\u9fa5\d.]/g, ''));
+    setScore(transNumber(value))
   };
 
   const handleRankChange = (value: string) => {
-    // 对value调用replace方法，将非数字并且非小数点的字符替换为空字符串
-    setRank(+value.replace(/[^\u4e00-\u9fa5\d]/g, ''));
+    setRank(transNumber(value))
   };
 
   const submit = () => {
-    if (subjectSelected.length !== 3) {
+    if (subjectsSelected.length !== 3) {
       return toast.error('请选择三门科目');
     }
-    if (!score) {
-      return toast.error('请输入分数');
+    if (isNaN(score as number)) {
+      return toast.error('分数格式不正确');
     }
-    if (!rank) {
-      return toast.error('请输入排名');
+    if (isNaN(rank as number)) {
+      return toast.error('排名格式不正确');
     }
 
     submitUserData({
+      location: '北京',
       rank,
       score,
-      subject: subjectSelected,
+      subjects: subjectsSelected,
     });
   };
 
@@ -91,20 +103,20 @@ export const EnterInfomation: FC<Props> = ({ setSpaceholder }) => {
               key={key}
               className={clsx(
                 'flex flex-1 justify-center h-9 items-center rounded-md border-solid border bg-[rgba(130,128,128,0.15)]',
-                subjectSelected.includes(key)
+                subjectsSelected.includes(key)
                   ? 'text-[rgba(14,13,13,1)] border-[rgba(0,0,0,0.75)]'
                   : 'text-[rgba(0,0,0,0.65)] border-[rgba(0,0,0,0.15)]',
               )}
               onClick={() => {
-                const index = subjectSelected.indexOf(key);
+                const index = subjectsSelected.indexOf(key);
                 if (index > -1) {
-                  setSubjectSelected(
-                    subjectSelected
+                  setSubjectsSelected(
+                    subjectsSelected
                       .slice(0, index)
-                      .concat(subjectSelected.slice(index + 1)),
+                      .concat(subjectsSelected.slice(index + 1)),
                   );
                 } else {
-                  setSubjectSelected([...subjectSelected, key]);
+                  setSubjectsSelected([...subjectsSelected, key]);
                 }
               }}
             >

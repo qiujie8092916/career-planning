@@ -1,27 +1,39 @@
-import {memo, MutableRefObject, useCallback, useContext, useEffect, useRef, useState,} from 'react';
+import {
+  MutableRefObject,
+  memo,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import toast from 'react-hot-toast';
-import {useMount} from 'react-use';
+import { useMount } from 'react-use';
 
-import {useTranslation} from 'next-i18next';
+import { useTranslation } from 'next-i18next';
 
 import useRecommands from '@/hooks/useRecommands';
 import useUser from '@/hooks/useUser';
 
-import {getEndpoint} from '@/utils/app/api';
-import {saveConversation, saveConversations, updateConversation,} from '@/utils/app/conversation';
-import {throttle} from '@/utils/data/throttle';
+import { getEndpoint } from '@/utils/app/api';
+import {
+  saveConversation,
+  saveConversations,
+  updateConversation,
+} from '@/utils/app/conversation';
+import { QUERY_PROCESS_ENUM } from '@/utils/app/urlQuery';
+import { throttle } from '@/utils/data/throttle';
 
-import {ChatBody, Conversation, Message} from '@/types/chat';
+import { ChatBody, Conversation, Message } from '@/types/chat';
 
 import HomeContext from '@/pages/api/home/home.context';
 
 import Spinner from '@/components/Spinner';
 
-import {ChatLoader} from './ChatLoader';
-import {MainInput} from './MainInput';
-import {Welcome} from './Welcome';
-import {UserInitData} from './UserInitData';
-import {QUERY_PROCESS_ENUM} from "@/utils/app/urlQuery";
+import { ChatLoader } from './ChatLoader';
+import { MainInput } from './MainInput';
+import { UserInitData } from './UserInitData';
+import { Welcome } from './Welcome';
 
 interface Props {
   stopConversationRef: MutableRefObject<boolean>;
@@ -31,7 +43,13 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
   const { t } = useTranslation('chat');
 
   const {
-    state: { selectedConversation, conversations, loading, userData, userStatus },
+    state: {
+      selectedConversation,
+      conversations,
+      loading,
+      userData,
+      userStatus,
+    },
     dispatch: homeDispatch,
   } = useContext(HomeContext);
 
@@ -285,7 +303,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
       },
     );
     const messagesEndElement = messagesEndRef.current;
-    if (messagesEndElement) {
+    if (messagesEndElement && userStatus === QUERY_PROCESS_ENUM.CHAT) {
       observer.observe(messagesEndElement);
     }
     return () => {
@@ -295,20 +313,21 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
     };
   }, [messagesEndRef]);
 
-  useMount(() => {
-    fetchUserData();
+  useMount(async () => {
+    await fetchUserData();
+    fetchRecommands();
   });
 
   const renderMainChat = () => {
     switch (userStatus) {
       case null:
-        return null
+        return null;
       case QUERY_PROCESS_ENUM.ENTER:
-        return <Welcome/>
+        return <Welcome />;
       case QUERY_PROCESS_ENUM.CHAT:
-        return <UserInitData/>
+        return <UserInitData />;
     }
-  }
+  };
 
   return (
     <div className={`h-full w-full overflow-y-auto relative`}>
@@ -321,7 +340,9 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
           <div className="text-center text-3xl font-semibold text-gray-800 dark:text-gray-100">
             <Spinner size="16px" className="mx-auto" />
           </div>
-        ) : renderMainChat()}
+        ) : (
+          renderMainChat()
+        )}
 
         {loading && <ChatLoader />}
 

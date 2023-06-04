@@ -68,7 +68,7 @@ const useUser = () => {
       return userData;
     } catch (e: any) {
       setPostUserLoading(false);
-      throw new Error(e);
+      toast.error(`提交失败: ${JSON.parse(e.message).message ?? ''}`);
     }
   };
 
@@ -103,7 +103,7 @@ const useUser = () => {
           college_985_count ?? '-'
         } 所 \n- 211：${
           college_211_count ?? '-'
-        } 所\n可以告诉我更多信息，比如个人爱好、升学/就业偏好，以便进一步明确合适的院校、专业\n`,
+        } 所\n\n可以告诉我更多信息，比如个人爱好、升学/就业偏好，以便进一步明确合适的院校、专业\n`,
       ];
 
       if (basic_info.location) {
@@ -119,7 +119,7 @@ const useUser = () => {
         userContent.push(`排名 ${basic_info.rank}`);
       }
 
-      if (most_recommend.length) {
+      if ((most_recommend ?? []).length) {
         assistantContent[0] = assistantContent[0] + `###### 建议填报院校\n`;
         most_recommend.forEach((item) => {
           assistantContent.push(`- ${item.value}\n`);

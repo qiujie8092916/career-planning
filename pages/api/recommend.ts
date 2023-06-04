@@ -6,27 +6,14 @@ export const config = {
 };
 
 const handler = async (req: any): Promise<Response> => {
-  try {
-    const response = await reverse_proxy({
-      method: 'GET',
-      headers: req.headers,
-      url: req.sourcePage,
-    });
+  const requestBody = await req.json() as Record<string, any>;
 
-    if (response.status !== 200) {
-      console.error(
-        `Occur an error ${response.status}: ${await response.text()}`,
-      );
-      throw new Error('recommend Occur an error');
-    }
-
-    const json = await response.json();
-
-    return new Response(JSON.stringify(json.data), { status: 200 });
-  } catch (error) {
-    console.error(error);
-    return new Response(JSON.stringify({}), { status: 200 });
-  }
+  return reverse_proxy({
+    method: 'POST',
+    headers: req.headers,
+    url: req.sourcePage,
+    body: JSON.stringify(requestBody)
+  });
 };
 
 export default handler;
