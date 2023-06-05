@@ -1,4 +1,4 @@
-import {useEffect, useRef, useCallback, useMemo} from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useQuery } from 'react-query';
 
 import { GetServerSideProps } from 'next';
@@ -10,13 +10,11 @@ import { useCreateReducer } from '@/hooks/useCreateReducer';
 
 import useErrorService from '@/services/errorService';
 import useApiService from '@/services/useApiService';
-import type { Engine } from "tsparticles-engine";
-import { loadFull } from "tsparticles";
+
 import {
   cleanConversationHistory,
   cleanSelectedConversation,
 } from '@/utils/app/clean';
-import { SITE_NAME } from '@/utils/data/const'
 import { DEFAULT_SYSTEM_PROMPT } from '@/utils/app/const';
 import {
   saveConversation,
@@ -24,6 +22,7 @@ import {
   updateConversation,
 } from '@/utils/app/conversation';
 import { getSettings } from '@/utils/app/settings';
+import { SITE_NAME } from '@/utils/data/const';
 
 import { Conversation } from '@/types/chat';
 import { KeyValuePair } from '@/types/data';
@@ -31,10 +30,13 @@ import { OpenAIModelID, OpenAIModels, fallbackModelID } from '@/types/openai';
 
 import { Chat } from '@/components/Chat/Chat';
 import { Navbar } from '@/components/Mobile/Navbar';
+import type { Actions as NavBarActions } from '@/components/Mobile/Navbar';
 
 import HomeContext from './home.context';
 import { HomeInitialState, initialState } from './home.state';
 
+import { loadFull } from 'tsparticles';
+import type { Engine } from 'tsparticles-engine';
 import { v4 as uuidv4 } from 'uuid';
 
 interface Props {
@@ -42,24 +44,19 @@ interface Props {
   defaultModelId: OpenAIModelID;
 }
 
-const Home = ({
-  serverSideApiKeyIsSet,
-  defaultModelId,
-}: Props) => {
+const Home = ({ serverSideApiKeyIsSet, defaultModelId }: Props) => {
   const { t } = useTranslation('chat');
   const { getModels } = useApiService();
   const { getModelsError } = useErrorService();
+
+  const navBarRef = useRef<NavBarActions>(null);
 
   const contextValue = useCreateReducer<HomeInitialState>({
     initialState,
   });
 
   const {
-    state: {
-      lightMode,
-      conversations,
-      selectedConversation,
-    },
+    state: { lightMode, conversations, selectedConversation },
     dispatch,
   } = contextValue;
 
@@ -130,11 +127,11 @@ const Home = ({
 
   const handleUpdateConversation = (
     conversation: Conversation,
-    data: KeyValuePair,
+    data?: KeyValuePair,
   ) => {
     const updatedConversation = {
       ...conversation,
-      [data.key]: data.value,
+      ...(data ? { [data.key]: data.value } : {}),
     };
 
     const { single, all } = updateConversation(
@@ -163,6 +160,13 @@ const Home = ({
         value: serverSideApiKeyIsSet,
       });
   }, [defaultModelId, serverSideApiKeyIsSet]);
+
+  const onScrollHeight = useCallback(
+    (sh: number) => {
+      navBarRef.current?.setScrollHeight(sh);
+    },
+    [navBarRef],
+  );
 
   // ON LOAD --------------------------------------------
 
@@ -231,77 +235,76 @@ const Home = ({
         },
       });
     }
-  }, [
-    defaultModelId,
-    dispatch,
-    serverSideApiKeyIsSet,
-  ]);
+  }, [defaultModelId, dispatch, serverSideApiKeyIsSet]);
 
   const particlesInit = useCallback(async (engine: Engine) => {
     await loadFull(engine);
   }, []);
 
-  const particlesOptions = useMemo(() => ({
-    particles: {
-      number: { value: 100, density: { enable: true, value_area: 800 } },
-      color: { value: "#333" },
-      shape: {
-        type: "circle",
-        stroke: { width: 0, color: "#000000" },
-        polygon: { nb_sides: 5 },
-        image: { src: "img/github.svg", width: 100, height: 100 },
-      },
-      opacity: {
-        value: 0.5,
-        random: false,
-        anim: { enable: false, speed: 1, opacity_min: 0.1, sync: false },
-      },
-      size: {
-        value: 3,
-        random: true,
-        anim: { enable: false, speed: 40, size_min: 0.1, sync: false },
-      },
-      line_linked: {
-        enable: true,
-        distance: 150,
-        color: "#aaa",
-        opacity: 0.4,
-        width: 1,
-      },
-      move: {
-        enable: true,
-        speed: 2,
-        direction: "none",
-        random: false,
-        straight: false,
-        out_mode: "out",
-        bounce: false,
-        attract: { enable: false, rotateX: 600, rotateY: 1200 },
-      },
-    },
-    interactivity: {
-      detect_on: "canvas",
-      events: {
-        onhover: { enable: true, mode: "grab" },
-        onclick: { enable: true, mode: "push" },
-        resize: true,
-      },
-      modes: {
-        grab: { distance: 200, line_linked: { opacity: 1 } },
-        bubble: {
-          distance: 400,
-          size: 40,
-          duration: 2,
-          opacity: 8,
-          speed: 2,
+  const particlesOptions = useMemo(
+    () => ({
+      particles: {
+        number: { value: 100, density: { enable: true, value_area: 800 } },
+        color: { value: '#333' },
+        shape: {
+          type: 'circle',
+          stroke: { width: 0, color: '#000000' },
+          polygon: { nb_sides: 5 },
+          image: { src: 'img/github.svg', width: 100, height: 100 },
         },
-        repulse: { distance: 200, duration: 0.4 },
-        push: { particles_nb: 4 },
-        remove: { particles_nb: 2 },
+        opacity: {
+          value: 0.5,
+          random: false,
+          anim: { enable: false, speed: 1, opacity_min: 0.1, sync: false },
+        },
+        size: {
+          value: 3,
+          random: true,
+          anim: { enable: false, speed: 40, size_min: 0.1, sync: false },
+        },
+        line_linked: {
+          enable: true,
+          distance: 150,
+          color: '#aaa',
+          opacity: 0.4,
+          width: 1,
+        },
+        move: {
+          enable: true,
+          speed: 2,
+          direction: 'none',
+          random: false,
+          straight: false,
+          out_mode: 'out',
+          bounce: false,
+          attract: { enable: false, rotateX: 600, rotateY: 1200 },
+        },
       },
-    },
-    retina_detect: true,
-  }), [])
+      interactivity: {
+        detect_on: 'canvas',
+        events: {
+          onhover: { enable: true, mode: 'grab' },
+          onclick: { enable: true, mode: 'push' },
+          resize: true,
+        },
+        modes: {
+          grab: { distance: 200, line_linked: { opacity: 1 } },
+          bubble: {
+            distance: 400,
+            size: 40,
+            duration: 2,
+            opacity: 8,
+            speed: 2,
+          },
+          repulse: { distance: 200, duration: 0.4 },
+          push: { particles_nb: 4 },
+          remove: { particles_nb: 2 },
+        },
+      },
+      retina_detect: true,
+    }),
+    [],
+  );
 
   return (
     <HomeContext.Provider
@@ -323,18 +326,21 @@ const Home = ({
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <div className='overflow-hidden w-full h-full relative flex z-0'>
-        <div className='relative flex h-full max-w-full flex-1'>
-          <div className='flex h-full max-w-full flex-1 flex-col overflow-hidden'>
+      <div className="overflow-hidden w-full h-full relative flex z-0">
+        <div className="relative flex h-full max-w-full flex-1">
+          <div className="flex h-full max-w-full flex-1 flex-col overflow-hidden">
             <main
               className={`relative h-full w-full transition-width flex flex-col overflow-hidden items-stretch flex-1 text-sm text-white ${lightMode}`}
             >
               <div className="absolute top-0 w-full sm:hidden z-10 text-sm text-white">
-                <Navbar />
+                <Navbar ref={navBarRef} />
               </div>
 
               <div className="pt-16 flex-1 overflow-hidden flex">
-                <Chat stopConversationRef={stopConversationRef} />
+                <Chat
+                  stopConversationRef={stopConversationRef}
+                  onScrollHeight={onScrollHeight}
+                />
               </div>
             </main>
           </div>

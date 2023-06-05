@@ -8,17 +8,20 @@ import useUrlQuery from '@/hooks/useUrlQuery';
 
 import { QUERY_PROCESS_ENUM } from '@/utils/app/urlQuery';
 
+import { OpenAIModelID, OpenAIModels } from '@/types/openai';
+
 import HomeContext from '@/pages/api/home/home.context';
 import type { UserData } from '@/pages/api/home/home.state';
-import {OpenAIModelID, OpenAIModels} from "@/types/openai";
-import {v4 as uuidv4} from "uuid";
+
+import { v4 as uuidv4 } from 'uuid';
 
 export interface FetchUserRequestProps {}
 
 const useUser = () => {
   const fetchService = useFetch();
 
-  const { dispatch: homeDispatch } = useContext(HomeContext);
+  const { dispatch: homeDispatch, handleUpdateConversation } =
+    useContext(HomeContext);
 
   const [postUserLoading, setPostUserLoading] = useState<boolean>(false);
 
@@ -144,22 +147,21 @@ const useUser = () => {
         });
       }
 
-      homeDispatch({
-        field: 'selectedConversation',
-        value: {
-          id: uuidv4(),
-          model: OpenAIModels[OpenAIModelID.GPT_3_5],
-          messages: [
-            {
-              role: 'user',
-              content: userContent.join('，'),
-            },
-            {
-              role: 'assistant',
-              content: assistantContent.join(''),
-            },
-          ],
-        },
+      handleUpdateConversation({
+        id: uuidv4(),
+        name: '新的聊天',
+        model: OpenAIModels[OpenAIModelID.GPT_3_5],
+        messages: [
+          {
+            role: 'user',
+            content: userContent.join('，'),
+          },
+          {
+            role: 'assistant',
+            content: assistantContent.join(''),
+          },
+        ],
+        prompt: '',
       });
     }
   };
@@ -184,7 +186,7 @@ const useUser = () => {
       });
       throw new Error(e);
     }
-  }
+  };
 
   return { postUserLoading, fetchUserData, submitUserData, logout };
 };

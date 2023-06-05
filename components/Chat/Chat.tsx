@@ -36,10 +36,11 @@ import { UserInitData } from './UserInitData';
 import { Welcome } from './Welcome';
 
 interface Props {
+  onScrollHeight: (scrollHeight: number) => any;
   stopConversationRef: MutableRefObject<boolean>;
 }
 
-export const Chat = memo(({ stopConversationRef }: Props) => {
+export const Chat = memo(({ onScrollHeight, stopConversationRef }: Props) => {
   const { t } = useTranslation('chat');
 
   const {
@@ -93,6 +94,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
         homeDispatch({ field: 'loading', value: true });
         homeDispatch({ field: 'messageIsStreaming', value: true });
         const chatBody: ChatBody = {
+          id: updatedConversation.id,
           model: updatedConversation.model,
           messages: updatedConversation.messages.slice(2),
           key: '',
@@ -260,8 +262,14 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
         setAutoScrollEnabled(true);
         setShowScrollDownButton(false);
       }
+      // throttledHandleScroll(scrollTop)
+      onScrollHeight(scrollTop);
     }
   };
+
+  const throttledHandleScroll = throttle((scrollTop: number) => {
+    onScrollHeight(scrollTop);
+  }, 350);
 
   const handleScrollDown = () => {
     chatContainerRef.current?.scrollTo({

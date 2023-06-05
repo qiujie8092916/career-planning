@@ -1,27 +1,34 @@
-import { FC, useContext, useState } from 'react';
+import {
+  Dispatch,
+  SetStateAction,
+  forwardRef,
+  useImperativeHandle,
+  useState,
+} from 'react';
 import { toast } from 'react-hot-toast';
 
 import Image from 'next/image';
+import { useRouter } from 'next/router';
 
-import { useFetch } from '@/hooks/useFetch';
+import useUser from '@/hooks/useUser';
 
 import { QQ_GROUP, SITE_LOGO, SITE_NAME } from '@/utils/data/const';
-
-import HomeContext from '@/pages/api/home/home.context';
 
 import Modal from '@/components/Modal';
 
 import LOGO_PNG from '@/public/logo.png';
 import copy from 'copy-to-clipboard';
-import useUser from "@/hooks/useUser";
 
 interface Props {}
 
-export const Navbar: FC<Props> = () => {
-  const fetchService = useFetch();
+export interface Actions {
+  setScrollHeight: Dispatch<SetStateAction<number>>;
+}
 
+export const Navbar = forwardRef<Actions, Props>((_, ref) => {
+  const router = useRouter();
   const { fetchUserData, logout } = useUser();
-
+  const [scrollHeight, setScrollHeight] = useState<number>(0);
   const [aboutModal, setAboutModal] = useState<boolean>(false);
 
   const copyToClipboard = () => {
@@ -30,19 +37,25 @@ export const Navbar: FC<Props> = () => {
     }
   };
 
+  useImperativeHandle(ref, () => ({
+    setScrollHeight,
+  }));
+
   return (
     <>
       <nav
         className="flex w-full items-center justify-between py-3 px-4 h-16 text-[#3C3C3C]"
         style={{
-          backgroundColor: `rgba(255, 255, 255, 1)`,
+          backgroundColor: `rgba(255, 255, 255, ${scrollHeight / 100})`,
         }}
       >
         <div
           className="flex gap-2.5 items-center text-xl font-semibold"
           onClick={async () => {
-            await logout();
-            fetchUserData();
+            if (router.query.debug === 'true') {
+              await logout();
+              fetchUserData();
+            }
           }}
         >
           {SITE_LOGO ? (
@@ -86,11 +99,12 @@ export const Navbar: FC<Props> = () => {
               {/*  注意：MyPath 目前仅收录了 985/211 院校的相关数据。{' '}*/}
               {/*</p>*/}
               <p className="text-base mb-5">
-                  MyPath 将根据填写的信息及考试院官方公布数据进行预测，仅适用于普通类考生志愿填报，不适用于艺考、国家专项等特殊类型招生方式。
+                MyPath
+                将根据填写的信息及考试院官方公布数据进行预测，仅适用于普通类考生志愿填报，不适用于艺考、国家专项等特殊类型招生方式。
               </p>
-                <p className="text-base mb-5">
-                    推荐结果仅供参考，数据以官方公布为准。
-                </p>
+              <p className="text-base mb-5">
+                推荐结果仅供参考，数据以官方公布为准。
+              </p>
               <div className="flex items-center flex-col mb-1">
                 <p className="text-xl mb-4 font-semibold text-center">
                   欢迎加入官方 QQ 群交流
@@ -108,4 +122,4 @@ export const Navbar: FC<Props> = () => {
       )}
     </>
   );
-};
+});
