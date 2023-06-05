@@ -304,6 +304,9 @@ export const Chat = memo(({ onScrollHeight, stopConversationRef }: Props) => {
     switch (userStatus) {
       case null:
         return null;
+      case QUERY_PROCESS_ENUM.WELCOME:
+      case QUERY_PROCESS_ENUM.REGISTER:
+      case QUERY_PROCESS_ENUM.LOGIN:
       case QUERY_PROCESS_ENUM.ENTER:
         return <Welcome />;
       case QUERY_PROCESS_ENUM.CHAT:

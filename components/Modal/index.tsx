@@ -9,8 +9,9 @@ import clsx from 'clsx';
 
 interface Props {
   maskClosable?: boolean;
+  modalWrapperClassName?: string;
   modalContainerClassName?: string;
-  modalClassName?: string
+  modalClassName?: string;
   headerClassName?: string;
   bodyClassName?: string;
   modalWidth?: number | string;
@@ -24,6 +25,7 @@ interface Props {
 
 const Modal: FC<Props> = ({
   maskClosable = true,
+  modalWrapperClassName,
   modalContainerClassName,
   modalClassName,
   headerClassName,
@@ -33,7 +35,7 @@ const Modal: FC<Props> = ({
   renderBody,
   onClose,
   closeClassName,
-  closeSize = 14
+  closeSize = 14,
 }) => {
   const { t: modalTrans } = useTranslation('modal');
 
@@ -52,7 +54,7 @@ const Modal: FC<Props> = ({
     };
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
+      if (e.key === 'Escape') {
         window.addEventListener('keyup', handleKeyUp);
       }
       onClose();
@@ -82,12 +84,18 @@ const Modal: FC<Props> = ({
         modalContainerClassName ?? '',
         styles.modalContaier,
         'fixed inset-0 z-[111] flex items-center justify-center bg-black bg-opacity-50',
-      )}>
-      <div className='fixed inset-0 z-10 overflow-y-auto'>
-        <div className='my-auto flex min-h-full items-center justify-center p-0 px-4 text-center sm:block'>
+      )}
+    >
+      <div className="fixed inset-0 z-10 overflow-y-auto">
+        <div
+          className={clsx(
+            modalWrapperClassName ?? '',
+            'my-auto flex min-h-full items-center justify-center p-0 px-4 text-center sm:block',
+          )}
+        >
           <div
-            className='hidden sm:inline-block sm:h-screen sm:align-middle'
-            aria-hidden='true'
+            className="hidden sm:inline-block sm:h-screen sm:align-middle"
+            aria-hidden="true"
           />
 
           <div
@@ -97,19 +105,23 @@ const Modal: FC<Props> = ({
               'inline-block transform overflow-hidden rounded-lg border-gray-300 bg-white text-left align-bottom text-[#0f172a] shadow-xl transition-all sm:my-8 sm:w-full sm:align-middle',
             )}
             style={{ width: modalWidth ?? 720 }}
-            role='dialog'>
-            {title !== undefined && <div className={clsx(styles.header, headerClassName ?? '')}>
-              {title}
-              <button
-                onClick={onClose}
-                className={clsx(
-                  styles.close,
-                  'flex h-[1.8rem] w-[1.8rem] items-center justify-center rounded-full bg-transparent text-[#9e9689] hover:border-transparent hover:bg-gray-200 hover:text-[#c3beb6]',
-                  closeClassName ?? ''
-                )}>
-                <IconX size={closeSize} />
-              </button>
-            </div>}
+            role="dialog"
+          >
+            {title !== undefined && (
+              <div className={clsx(styles.header, headerClassName ?? '')}>
+                {title}
+                <button
+                  onClick={onClose}
+                  className={clsx(
+                    styles.close,
+                    'flex h-[1.8rem] w-[1.8rem] items-center justify-center rounded-full bg-transparent text-[#9e9689] hover:border-transparent hover:bg-gray-200 hover:text-[#c3beb6]',
+                    closeClassName ?? '',
+                  )}
+                >
+                  <IconX size={closeSize} />
+                </button>
+              </div>
+            )}
             <div className={clsx(styles.body, bodyClassName ?? '')}>
               {renderBody}
             </div>

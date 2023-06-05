@@ -5,7 +5,7 @@ import {
   useImperativeHandle,
   useState,
 } from 'react';
-import { toast } from 'react-hot-toast';
+import { copyToClipboard } from '@/utils/app/copyToClipboard';
 
 import Image from 'next/image';
 import { useRouter } from 'next/router';
@@ -30,12 +30,6 @@ export const Navbar = forwardRef<Actions, Props>((_, ref) => {
   const { fetchUserData, logout } = useUser();
   const [scrollHeight, setScrollHeight] = useState<number>(0);
   const [aboutModal, setAboutModal] = useState<boolean>(false);
-
-  const copyToClipboard = () => {
-    if (copy(QQ_GROUP)) {
-      toast.success('复制成功');
-    }
-  };
 
   useImperativeHandle(ref, () => ({
     setScrollHeight,
@@ -110,7 +104,7 @@ export const Navbar = forwardRef<Actions, Props>((_, ref) => {
                   欢迎加入官方 QQ 群交流
                 </p>
                 <button
-                  className="text-base rounded-md bg-[rgba(130,128,128,0.25)] px-6 py-1.5"
+                  className="w-full text-base rounded-md bg-[rgba(130,128,128,0.25)] px-6 py-1.5"
                   onClick={copyToClipboard}
                 >
                   点击复制群号 {QQ_GROUP}
