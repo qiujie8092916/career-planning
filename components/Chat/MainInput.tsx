@@ -39,6 +39,8 @@ export const MainInput: FC<Props> = ({
 
   const render = () => {
     switch (userStatus) {
+      case null:
+        return null;
       case QUERY_PROCESS_ENUM.WELCOME:
         return <Introduce />
       case QUERY_PROCESS_ENUM.REGISTER:
