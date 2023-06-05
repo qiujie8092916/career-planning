@@ -1,4 +1,4 @@
-export const Welcome = () => {
+export const Introduce = () => {
   return (
     <div className="text-base leading-[1.875rem] text-[#3C3C3C] w-full h-full px-4 mt-[0.625rem]">
       <div className='mb-8'>你好，我是你的</div>
