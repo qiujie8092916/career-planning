@@ -6,6 +6,7 @@
  * chat 聊天
  */
 export enum QUERY_PROCESS_ENUM {
+  WELCOME = 'welcome',
   ENTER = 'enter',
   REGISTER = 'register',
   LOGIN = 'login',

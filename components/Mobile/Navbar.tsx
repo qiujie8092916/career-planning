@@ -24,10 +24,6 @@ export const Navbar: FC<Props> = () => {
 
   const [aboutModal, setAboutModal] = useState<boolean>(false);
 
-  const {
-    state: { scrollHeight },
-  } = useContext(HomeContext);
-
   const copyToClipboard = () => {
     if (copy(QQ_GROUP)) {
       toast.success('复制成功');
@@ -39,7 +35,7 @@ export const Navbar: FC<Props> = () => {
       <nav
         className="flex w-full items-center justify-between py-3 px-4 h-16 text-[#3C3C3C]"
         style={{
-          backgroundColor: `rgba(255, 255, 255, ${scrollHeight / 100})`,
+          backgroundColor: `rgba(255, 255, 255, 1)`,
         }}
       >
         <div
@@ -86,18 +82,21 @@ export const Navbar: FC<Props> = () => {
           bodyClassName="!px-[1.25rem]"
           renderBody={
             <>
-              <p className="text-xl mb-5 font-semibold">
-                注意：MyPath 目前仅收录了 985/211 院校的相关数据。{' '}
-              </p>
+              {/*<p className="text-xl mb-5 font-semibold">*/}
+              {/*  注意：MyPath 目前仅收录了 985/211 院校的相关数据。{' '}*/}
+              {/*</p>*/}
               <p className="text-base mb-5">
-                需要了解此范围外的院校信息，请登录各学校官网或者阳光高考等官方平台查看。
+                  MyPath 将根据填写的信息及考试院官方公布数据进行预测，仅适用于普通类考生志愿填报，不适用于艺考、国家专项等特殊类型招生方式。
               </p>
+                <p className="text-base mb-5">
+                    推荐结果仅供参考，数据以官方公布为准。
+                </p>
               <div className="flex items-center flex-col mb-1">
                 <p className="text-xl mb-4 font-semibold text-center">
                   欢迎加入官方 QQ 群交流
                 </p>
                 <button
-                  className="text-base rounded-md bg-slate-300 px-6 py-1.5"
+                  className="text-base rounded-md bg-[rgba(130,128,128,0.25)] px-6 py-1.5"
                   onClick={copyToClipboard}
                 >
                   点击复制群号 {QQ_GROUP}

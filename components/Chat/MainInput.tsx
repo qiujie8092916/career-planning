@@ -1,6 +1,6 @@
 import {Dispatch, FC, RefObject, SetStateAction, useContext} from 'react';
 
-import { useRouter } from 'next/router';
+import { Introduce } from './Introduce';
 
 import { QUERY_PROCESS_ENUM } from '@/utils/app/urlQuery';
 
@@ -10,6 +10,7 @@ import { ChatInput } from './ChatInput';
 import { EnterInfomation } from './EnterInfomation';
 import useUrlQuery from "@/hooks/useUrlQuery";
 import HomeContext from "@/pages/api/home/home.context";
+import {Welcome} from "@/components/Chat/Welcome";
 
 interface Props {
   handleSend: (
@@ -38,7 +39,8 @@ export const MainInput: FC<Props> = ({
 
   const render = () => {
     switch (userStatus) {
-      case null:
+      case QUERY_PROCESS_ENUM.WELCOME:
+        <Introduce />
       case QUERY_PROCESS_ENUM.REGISTER:
       case QUERY_PROCESS_ENUM.LOGIN:
         return null;

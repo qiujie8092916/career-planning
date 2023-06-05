@@ -7,6 +7,7 @@ import {
   useEffect,
   useRef,
   useState,
+  KeyboardEvent
 } from 'react';
 
 import { useTranslation } from 'next-i18next';
@@ -79,6 +80,21 @@ export const ChatInput = ({
     }
   };
 
+  const isMobile = () => {
+    const userAgent =
+        typeof window.navigator === 'undefined' ? '' : navigator.userAgent;
+    const mobileRegex =
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile|CriOS/i;
+    return mobileRegex.test(userAgent);
+  };
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+    if (isMobile() && e.key === 'Enter' && e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
+
   useEffect(() => {
     if (promptListRef.current) {
       promptListRef.current.scrollTop = activePromptIndex * 30;
@@ -111,7 +127,7 @@ export const ChatInput = ({
       {/*)}*/}
 
       {/*{recommendData.length ? (*/}
-      {/*  <div className='text-xs text-gray-800 dark:text-gray-100 flex justify-start'>*/}
+      {/*  <div className='text-xs text-[#3C3C3C] dark:text-gray-100 flex justify-start'>*/}
       {/*    <div className={clsx('pointer-events-auto w-full overflow-x-auto whitespace-nowrap')}>*/}
       {/*      {recommendData.map(recommand => (*/}
       {/*        <div key={recommand} onClick={() => setContent(recommand)} className='inline-block max-w-[15rem] mr-4 hover:opacity-100 hover:border-gray-100 opacity-90 px-4 py-1.5 rounded-2xl border dark:border-gray-400 bg-gray-50 dark:bg-[#444654] cursor-pointer truncate'>{recommand}</div>*/}
@@ -131,19 +147,19 @@ export const ChatInput = ({
             onClick={() => setExpansionRecommend(!expansionRecommend)}
           >
             参考问题
-            <div className={expansionRecommend ? 'transform rotate-180' : ''}>
+            <div className={expansionRecommend ? '' : 'transform rotate-180'}>
               <IconChevronDown size={14} />
             </div>
           </div>
           {expansionRecommend && (
-            <div className="text-xs text-gray-800 pt-2 dark:text-gray-100 flex items-start flex-col gap-3">
+            <div className="text-sm text-[#3C3C3C] pt-2 dark:text-gray-100 flex items-start flex-col gap-3">
               {recommendData.map((recommand) => (
                 <div
                   key={recommand}
                   onClick={() => {
                     setContent(recommand);
                   }}
-                  className="hover:opacity-100 hover:border-gray-100 opacity-90 px-4 py-1.5 rounded-xl border dark:border-gray-400 bg-gray-50 dark:bg-[#444654] cursor-pointer truncate"
+                  className="hover:opacity-100 hover:border-gray-100 opacity-90 px-4 py-1.5 rounded-xl border dark:border-gray-400 bg-gray-50 dark:bg-[#444654] cursor-pointer truncate max-w-full"
                 >
                   {recommand}
                 </div>
@@ -167,12 +183,11 @@ export const ChatInput = ({
                 : 'hidden'
             }`,
           }}
-          placeholder={
-            t('Type a message or type "/" to select a prompt...') || ''
-          }
+          placeholder={'点击输入你的疑问...'}
           value={content}
           rows={1}
           onChange={handleChange}
+          onKeyDown={handleKeyDown}
         />
 
         <button
@@ -187,9 +202,9 @@ export const ChatInput = ({
         </button>
 
         {showScrollDownButton && (
-          <div className="absolute bottom-12 right-0 lg:bottom-0 lg:-right-10">
+          <div className="absolute bottom-24 right-0 lg:bottom-0 lg:-right-10">
             <button
-              className="flex h-7 w-7 items-center justify-center rounded-full bg-neutral-300 text-gray-800 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex h-7 w-7 items-center justify-center rounded-full bg-neutral-300 text-[#3C3C3C] shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               onClick={onScrollDownClick}
             >
               <IconArrowDown size={18} />

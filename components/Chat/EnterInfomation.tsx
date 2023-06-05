@@ -74,11 +74,15 @@ export const EnterInfomation: FC<Props> = ({ setSpaceholder }) => {
     if (subjectsSelected.length !== 3) {
       return toast.error('请选择三门科目');
     }
-    if (isNaN(score as number)) {
+    if (score && isNaN(score as number)) {
       return toast.error('分数格式不正确');
     }
-    if (isNaN(rank as number)) {
+    if (rank && isNaN(rank as number)) {
       return toast.error('排名格式不正确');
+    }
+
+    if(!score && !rank) {
+        return toast.error('赋分成绩和排名至少填写一项');
     }
 
     submitUserData({
@@ -92,17 +96,18 @@ export const EnterInfomation: FC<Props> = ({ setSpaceholder }) => {
   useMount(() => setSpaceholder(260));
 
   return (
-    <div className="text-base text-[#3C3C3C] gap-5 py-4 px-5 relative flex w-full flex-grow flex-col rounded-md border border-black/10 bg-[rgba(255,255,255,0.75)] shadow-[0_0_10px_rgba(0,0,0,0.10)]">
+    <div className="text-base text-[#3C3C3C] gap-5 py-4 px-5 relative flex w-full flex-grow flex-col rounded-md border border-black/10 bg-[rgba(255,255,255,1)] shadow-[0_0_10px_rgba(0,0,0,0.10)]">
       <div className="flex flex-row gap-5 items-start">
         <div className='before:content-["*"] whitespace-nowrap h-9 leading-9'>
           科类
         </div>
         <div className="flex-1 w-full overflow-hidden grid grid-cols-3 gap-x-3 gap-y-5">
           {[...SUBJECT_MAP].map(([key, value]) => (
-            <div
+            <button
               key={key}
+              disabled={!subjectsSelected.includes(key) && subjectsSelected.length === 3}
               className={clsx(
-                'flex flex-1 justify-center h-9 items-center rounded-md border-solid border bg-[rgba(130,128,128,0.15)]',
+                'disabled:text-[rgba(0,0,0,.25)] flex flex-1 justify-center h-9 items-center rounded-md border-solid border bg-[rgba(130,128,128,0.15)]',
                 subjectsSelected.includes(key)
                   ? 'text-[rgba(14,13,13,1)] border-[rgba(0,0,0,0.75)]'
                   : 'text-[rgba(0,0,0,0.65)] border-[rgba(0,0,0,0.15)]',
@@ -121,7 +126,7 @@ export const EnterInfomation: FC<Props> = ({ setSpaceholder }) => {
               }}
             >
               {value}
-            </div>
+            </button>
           ))}
         </div>
       </div>
@@ -149,7 +154,7 @@ export const EnterInfomation: FC<Props> = ({ setSpaceholder }) => {
             className="outline-none min-w-0 flex flex-1 text-center h-9 rounded-md border-solid border border-[rgba(0,0,0,0.15)] bg-[rgba(130,128,128,0.15)]"
             type="number"
             value={score}
-            placeholder="分数"
+            placeholder="赋分成绩"
             onChange={(e) => handleScoreChange(e.target.value)}
           />
           <input
@@ -162,7 +167,8 @@ export const EnterInfomation: FC<Props> = ({ setSpaceholder }) => {
         </div>
       </div>
       <button
-        className="flex flex-row gap-2 items-center justify-center h-9 rounded-md border-solid border border-[rgba(0,0,0,0.75)] bg-neutral-100 hover:opacity-80"
+        className="disabled:text-[rgba(0,0,0,.25)] flex flex-row gap-2 items-center justify-center h-9 rounded-md border-solid border border-[rgba(0,0,0,0.75)] bg-neutral-100 hover:opacity-80"
+        disabled={!(subjectsSelected.length == 3 && (!isNaN(score as number) || !isNaN(rank as number)))}
         onClick={submit}
       >
         {postUserLoading && <Spinner size="16px" className="inline" />}

@@ -11,6 +11,7 @@ import { QUERY_PROCESS_ENUM } from '@/utils/app/urlQuery';
 import HomeContext from '@/pages/api/home/home.context';
 import type { UserData } from '@/pages/api/home/home.state';
 import {OpenAIModelID, OpenAIModels} from "@/types/openai";
+import {v4 as uuidv4} from "uuid";
 
 export interface FetchUserRequestProps {}
 
@@ -146,6 +147,7 @@ const useUser = () => {
       homeDispatch({
         field: 'selectedConversation',
         value: {
+          id: uuidv4(),
           model: OpenAIModels[OpenAIModelID.GPT_3_5],
           messages: [
             {

@@ -10,14 +10,13 @@ import { useCreateReducer } from '@/hooks/useCreateReducer';
 
 import useErrorService from '@/services/errorService';
 import useApiService from '@/services/useApiService';
-import Particles from "react-particles";
 import type { Engine } from "tsparticles-engine";
 import { loadFull } from "tsparticles";
-import { ISourceOptions } from "tsparticles-engine";
 import {
   cleanConversationHistory,
   cleanSelectedConversation,
 } from '@/utils/app/clean';
+import { SITE_NAME } from '@/utils/data/const'
 import { DEFAULT_SYSTEM_PROMPT } from '@/utils/app/const';
 import {
   saveConversation,
@@ -315,7 +314,7 @@ const Home = ({
     >
       {/*<Particles options={particlesOptions as ISourceOptions} init={particlesInit} />*/}
       <Head>
-        <title>Chatbot UI</title>
+        <title>{SITE_NAME}</title>
         <meta name="description" content="ChatGPT but better." />
         <meta
           name="viewport"
