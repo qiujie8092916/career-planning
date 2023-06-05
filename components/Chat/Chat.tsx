@@ -260,11 +260,6 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
         setAutoScrollEnabled(true);
         setShowScrollDownButton(false);
       }
-
-      homeDispatch({
-        field: 'scrollHeight',
-        value: scrollTop,
-      });
     }
   };
 
@@ -292,30 +287,6 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
       );
   }, [selectedConversation, throttledScrollDown]);
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setAutoScrollEnabled(entry.isIntersecting);
-        if (entry.isIntersecting) {
-          textareaRef.current?.focus();
-        }
-      },
-      {
-        root: null,
-        threshold: 0.5,
-      },
-    );
-    const messagesEndElement = messagesEndRef.current;
-    if (messagesEndElement) {
-      observer.observe(messagesEndElement);
-    }
-    return () => {
-      if (messagesEndElement) {
-        observer.unobserve(messagesEndElement);
-      }
-    };
-  }, [messagesEndRef]);
-
   useMount(async () => {
     await fetchUserData();
     fetchRecommands();
@@ -340,7 +311,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
         onScroll={handleScroll}
       >
         {getUserLoading ? (
-          <div className="text-center text-3xl font-semibold text-gray-800 dark:text-gray-100">
+          <div className="text-center text-3xl font-semibold text-[#3C3C3C] dark:text-gray-100">
             <Spinner size="16px" className="mx-auto" />
           </div>
         ) : (
