@@ -65,30 +65,6 @@ export const MainInput: FC<Props> = ({
           />
         );
     }
-    // switch (userStatus) {
-    //   case null:
-    //     return null;
-    //   case QUERY_PROCESS_ENUM.ENTER:
-    //   case QUERY_PROCESS_ENUM.WELCOME:
-    //     return <Introduce setSpaceholder={setSpaceholder} />;
-    //   case QUERY_PROCESS_ENUM.REGISTER:
-    //     return <Register setSpaceholder={setSpaceholder} />;
-    //   case QUERY_PROCESS_ENUM.LOGIN:
-    //     return <Login setSpaceholder={setSpaceholder} />;
-    //   case QUERY_PROCESS_ENUM.CHAT:
-    //     return (
-    //       <ChatInput
-    //         setSpaceholder={setSpaceholder}
-    //         textareaRef={textareaRef}
-    //         onSend={(message) => {
-    //           setCurrentMessage(message);
-    //           handleSend(message, 0);
-    //         }}
-    //         onScrollDownClick={handleScrollDown}
-    //         showScrollDownButton={showScrollDownButton}
-    //       />
-    //     );
-    // }
   };
 
   return render();

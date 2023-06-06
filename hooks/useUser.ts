@@ -1,10 +1,8 @@
-import { useCallback, useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useState } from 'react';
 import toast from 'react-hot-toast';
 
-import { useTranslation } from 'next-i18next';
 
 import { useFetch } from '@/hooks/useFetch';
-import useUrlQuery from '@/hooks/useUrlQuery';
 
 import { QUERY_PROCESS_ENUM } from '@/utils/app/urlQuery';
 
@@ -25,7 +23,7 @@ const useUser = () => {
 
   const [postUserLoading, setPostUserLoading] = useState<boolean>(false);
 
-  const handlerUser = useCallback(
+  const handlerUserData = useCallback(
     (payload?: Record<string, any>) => {
       return fetchService.post<{ data?: UserData }>(`/api/userData`, {
         headers: {
@@ -57,30 +55,52 @@ const useUser = () => {
       value: true,
     });
 
-    try {
-      const userData = await handlerUser({});
+    fetch(`/api/userData`, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      method: 'POST',
+      body: JSON.stringify({}),
+    })
+      .then(async (res) => {
+        if (res.status === 200) {
+          const responseBody = await res.json();
+          commonhandlerUser(responseBody?.data);
+          return responseBody;
+        } else {
+          const responseBody = await res.json();
+          if (responseBody.code === 401) {
+            // 未登录
+            homeDispatch({
+              field: 'userData',
+              value: null,
+            });
 
-      commonhandlerUser(userData?.data);
-
-      homeDispatch({
-        field: 'getUserLoading',
-        value: false,
+            homeDispatch({
+              field: 'userStatus',
+              value: QUERY_PROCESS_ENUM.WELCOME,
+            });
+          } else {
+            toast.error(`登录失败: ${responseBody.code}`);
+          }
+        }
+      })
+      .catch((err) => {
+        throw new Error(err);
+      })
+      .finally(() => {
+        homeDispatch({
+          field: 'getUserLoading',
+          value: false,
+        });
       });
-
-      return userData;
-    } catch (e: any) {
-      homeDispatch({
-        field: 'getUserLoading',
-        value: false,
-      });
-      throw new Error(e);
-    }
   };
 
   const submitUserData = async (payload: Record<string, any>) => {
     setPostUserLoading(true);
     try {
-      const userData = await handlerUser(payload);
+      const userData = await handlerUserData(payload);
 
       commonhandlerUser(userData.data);
 
@@ -166,6 +186,73 @@ const useUser = () => {
     }
   };
 
+  const register = async ({
+    mobile,
+    password,
+    inviteCode,
+  }: {
+    mobile: string;
+    password: string;
+    inviteCode: string;
+  }) => {
+    fetch('/api/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify({
+        mobile,
+        password,
+        inviteCode,
+      }),
+    })
+      .then(async (res) => {
+        if (res.status === 200) {
+          toast.success(`注册成功`);
+          fetchUserData();
+        } else {
+          const responseBody = await res.json();
+          toast.error(`注册失败: ${responseBody?.message}`);
+        }
+      })
+      .catch((err) => {
+        toast.error(`注册失败: ${JSON.parse(err.message).message ?? ''}`);
+      });
+  };
+
+  const login = async ({
+    mobile,
+    password,
+  }: {
+    mobile: string;
+    password: string;
+  }) => {
+    fetch('/api/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify({
+        mobile,
+        password,
+      }),
+    })
+      .then(async (res) => {
+        if (res.status === 200) {
+          toast.success(`登录成功`);
+          fetchUserData();
+        } else {
+          const responseBody = await res.json();
+          toast.error(`登录失败: ${responseBody?.message}`);
+        }
+      })
+      .catch((err) => {
+        toast.error(`登录失败: ${JSON.parse(err.message).message ?? ''}`);
+      });
+  };
+
   const logout = async () => {
     homeDispatch({
       field: 'logoutLoading',
@@ -188,7 +275,14 @@ const useUser = () => {
     }
   };
 
-  return { postUserLoading, fetchUserData, submitUserData, logout };
+  return {
+    postUserLoading,
+    fetchUserData,
+    submitUserData,
+    register,
+    login,
+    logout,
+  };
 };
 
 export default useUser;
