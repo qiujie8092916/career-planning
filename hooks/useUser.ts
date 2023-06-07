@@ -155,6 +155,7 @@ const useUser = () => {
       } = userData as UserData;
 
       const userContent = [];
+
       const assistantContent = [
         `###### 根据你提供的信息，结合近 ${
           data_time_range ?? '-'
