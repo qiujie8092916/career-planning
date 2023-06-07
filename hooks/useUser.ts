@@ -106,7 +106,6 @@ const useUser = () => {
       const userData = await handlerUserData(payload);
 
       commonhandlerUser(userData.data);
-
       setPostUserLoading(false);
 
       return userData;
