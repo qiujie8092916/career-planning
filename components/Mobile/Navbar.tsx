@@ -18,6 +18,7 @@ import Modal from '@/components/Modal';
 
 import LOGO_PNG from '@/public/logo.png';
 import copy from 'copy-to-clipboard';
+import {WechatServiceButton} from "@/components/Buttons/WechatServiceButton";
 
 interface Props {}
 
@@ -101,13 +102,14 @@ export const Navbar = forwardRef<Actions, Props>((_, ref) => {
               </p>
               <div className="flex items-center flex-col mb-1">
                 <p className="text-xl mb-4 font-semibold text-center">
-                  欢迎加入官方 QQ 群交流
+                  欢迎加入官方群交流
                 </p>
+                <WechatServiceButton buttonClassName={'mb-3.5'} />
                 <button
                   className="w-full text-base rounded-md bg-[rgba(130,128,128,0.25)] px-6 py-1.5"
                   onClick={() => copyToClipboard()}
                 >
-                  点击复制群号 {QQ_GROUP}
+                  点击复制 QQ 群号 {QQ_GROUP}
                 </button>
               </div>
             </>

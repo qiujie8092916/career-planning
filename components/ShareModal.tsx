@@ -9,6 +9,7 @@ import Modal from '@/components/Modal';
 
 import GUIDE_SHARE from '@/public/guide_share.png';
 import copy from 'copy-to-clipboard';
+import {WechatServiceButton} from "@/components/Buttons/WechatServiceButton";
 
 type Props = {
   onClose: () => any;
@@ -34,11 +35,12 @@ const ShareModal: React.FC<Props> = ({ onClose }) => {
           </p>
           <p className="text-base mb-5">加入官方交流群碰碰运气：</p>
           <div className="flex items-center flex-col mb-1 gap-5">
+            <WechatServiceButton />
             <button
               className="w-full text-base rounded-md bg-[rgba(130,128,128,0.25)] px-6 py-1.5"
               onClick={() => copyToClipboard()}
             >
-              点击复制群号 {QQ_GROUP}
+              点击复制 QQ 群号 {QQ_GROUP}
             </button>
             <button
               className="w-full text-base rounded-md bg-[rgba(130,128,128,0.25)] px-6 py-1.5"

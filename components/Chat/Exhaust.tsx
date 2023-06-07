@@ -12,6 +12,7 @@ import userData from '@/pages/api/userData';
 import ShareModal from '@/components/ShareModal';
 
 import type { Props as MainInputProps } from './MainInput';
+import {WechatServiceButton} from "@/components/Buttons/WechatServiceButton";
 
 export const Exhaust: FC<Pick<MainInputProps, 'setSpaceholder'>> = ({
   setSpaceholder,
@@ -43,13 +44,14 @@ export const Exhaust: FC<Pick<MainInputProps, 'setSpaceholder'>> = ({
             点击复制邀请码 {(userData as UserData)?.invite_code ?? ''}
           </button>
           <p className="text-base mb-3.5">
-            加入官方 QQ 群，成为付费会员即可享受无限次咨询。
+            加入官方交流群，成为付费会员即可享受无限次咨询。
           </p>
+          <WechatServiceButton buttonClassName={'mb-3.5'} />
           <button
             className="w-full text-base rounded-md bg-[rgba(130,128,128,0.25)] px-6 py-1.5"
             onClick={() => copyToClipboard()}
           >
-            点击复制群号 {QQ_GROUP}
+            点击复制 QQ 群号 {QQ_GROUP}
           </button>
         </div>
       </div>

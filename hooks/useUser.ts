@@ -145,7 +145,7 @@ const useUser = () => {
     }
 
     // set initial chat content
-    if (userData && !selectedConversation) {
+    if (userData && Object.keys(userData.basic_info).length && !selectedConversation) {
       const {
         basic_info,
         most_recommend,
