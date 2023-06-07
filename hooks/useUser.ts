@@ -2,7 +2,6 @@ import { useCallback, useContext, useState } from 'react';
 import toast from 'react-hot-toast';
 
 import { useRouter } from 'next/router';
-
 import { useFetch } from '@/hooks/useFetch';
 
 import { QUERY_PROCESS_ENUM } from '@/utils/app/urlQuery';
