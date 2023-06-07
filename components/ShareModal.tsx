@@ -36,7 +36,7 @@ const ShareModal: React.FC<Props> = ({ onClose }) => {
           <div className="flex items-center flex-col mb-1 gap-5">
             <button
               className="w-full text-base rounded-md bg-[rgba(130,128,128,0.25)] px-6 py-1.5"
-              onClick={copyToClipboard}
+              onClick={() => copyToClipboard()}
             >
               点击复制群号 {QQ_GROUP}
             </button>

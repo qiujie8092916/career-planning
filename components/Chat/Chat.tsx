@@ -1,39 +1,42 @@
-import {
-  MutableRefObject,
-  memo,
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import { MutableRefObject, memo, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useMount } from 'react-use';
 
+
+
 import { useTranslation } from 'next-i18next';
+
+
 
 import useRecommands from '@/hooks/useRecommands';
 import useUser from '@/hooks/useUser';
 
+
+
 import { getEndpoint } from '@/utils/app/api';
-import {
-  saveConversation,
-  saveConversations,
-  updateConversation,
-} from '@/utils/app/conversation';
+import { saveConversation, saveConversations, updateConversation } from '@/utils/app/conversation';
 import { QUERY_PROCESS_ENUM } from '@/utils/app/urlQuery';
 import { throttle } from '@/utils/data/throttle';
 
+
+
 import { ChatBody, Conversation, Message } from '@/types/chat';
+
+
 
 import HomeContext from '@/pages/api/home/home.context';
 
+
+
 import Spinner from '@/components/Spinner';
+
+
 
 import { ChatLoader } from './ChatLoader';
 import { MainInput } from './MainInput';
 import { UserInitData } from './UserInitData';
 import { Welcome } from './Welcome';
+
 
 interface Props {
   onScrollHeight: (scrollHeight: number) => any;
@@ -194,6 +197,7 @@ export const Chat = memo(({ onScrollHeight, stopConversationRef }: Props) => {
           }
 
           // chatting end
+          fetchUserData()
           if (updatedConversation.messages.length > 1) {
             fetchRecommands(updatedConversation.messages.slice(-2));
           }
@@ -310,6 +314,7 @@ export const Chat = memo(({ onScrollHeight, stopConversationRef }: Props) => {
       case QUERY_PROCESS_ENUM.ENTER:
         return <Welcome />;
       case QUERY_PROCESS_ENUM.CHAT:
+      case QUERY_PROCESS_ENUM.EXHAUST:
         return <UserInitData />;
     }
   };
@@ -321,7 +326,7 @@ export const Chat = memo(({ onScrollHeight, stopConversationRef }: Props) => {
         ref={chatContainerRef}
         onScroll={handleScroll}
       >
-        {getUserLoading ? (
+        {getUserLoading && !selectedConversation ? (
           <div className="text-center text-3xl font-semibold text-[#3C3C3C] dark:text-gray-100">
             <Spinner size="16px" className="mx-auto" />
           </div>

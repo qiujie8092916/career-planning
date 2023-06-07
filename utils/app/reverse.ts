@@ -28,8 +28,12 @@ export const reverse_proxy = async ({
     headers,
     body,
   })
+    .then((res) => {
+      console.log('res', res);
+      return res;
+    })
     .catch((error) => {
-      console.error(error)
-      return error
+      console.error(error);
+      return error;
     });
 };

@@ -10,6 +10,8 @@ export interface UserData {
   college_985_count: number;
   college_211_count: number;
   most_recommend: { value: string }[];
+  chat_count_left: number;
+  invite_code: string;
   basic_info: {
     location: string;
     rank: number;

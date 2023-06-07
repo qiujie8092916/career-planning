@@ -4,6 +4,7 @@
  * register 注册
  * login 登录
  * chat 聊天
+ * exhaust
  */
 export enum QUERY_PROCESS_ENUM {
   WELCOME = 'welcome',
@@ -11,4 +12,5 @@ export enum QUERY_PROCESS_ENUM {
   REGISTER = 'register',
   LOGIN = 'login',
   CHAT = 'chat',
+  EXHAUST = 'exhaust'
 }

@@ -1,6 +1,7 @@
 import { useCallback, useContext, useState } from 'react';
 import toast from 'react-hot-toast';
 
+import { useRouter } from 'next/router';
 
 import { useFetch } from '@/hooks/useFetch';
 
@@ -17,15 +18,19 @@ export interface FetchUserRequestProps {}
 
 const useUser = () => {
   const fetchService = useFetch();
+  const router = useRouter();
 
-  const { dispatch: homeDispatch, handleUpdateConversation } =
-    useContext(HomeContext);
+  const {
+    state: { selectedConversation },
+    dispatch: homeDispatch,
+    handleUpdateConversation,
+  } = useContext(HomeContext);
 
   const [postUserLoading, setPostUserLoading] = useState<boolean>(false);
 
   const handlerUserData = useCallback(
     (payload?: Record<string, any>) => {
-      return fetchService.post<{ data?: UserData }>(`/api/userData`, {
+      return fetchService.post<{ data: UserData }>(`/api/userData`, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -66,7 +71,7 @@ const useUser = () => {
       .then(async (res) => {
         if (res.status === 200) {
           const responseBody = await res.json();
-          commonhandlerUser(responseBody?.data);
+          commonhandlerUser(responseBody.data);
           return responseBody;
         } else {
           const responseBody = await res.json();
@@ -113,7 +118,7 @@ const useUser = () => {
     }
   };
 
-  const commonhandlerUser = (userData?: UserData) => {
+  const commonhandlerUser = (userData: UserData) => {
     // set user data
     homeDispatch({
       field: 'userData',
@@ -123,11 +128,26 @@ const useUser = () => {
     // set user status
     homeDispatch({
       field: 'userStatus',
-      value: userData ? QUERY_PROCESS_ENUM.CHAT : QUERY_PROCESS_ENUM.ENTER,
+      value:
+        userData.chat_count_left <= 0
+          ? QUERY_PROCESS_ENUM.EXHAUST
+          : Object.keys(userData.basic_info).length > 0
+          ? QUERY_PROCESS_ENUM.CHAT
+          : QUERY_PROCESS_ENUM.ENTER,
     });
 
+    if (userData?.invite_code) {
+      router.push({
+        pathname: router.pathname,
+        query: {
+          ...router.query,
+          ic: userData.invite_code,
+        },
+      });
+    }
+
     // set initial chat content
-    if (userData && JSON.stringify(userData) !== '{}') {
+    if (userData && !selectedConversation) {
       const {
         basic_info,
         most_recommend,
@@ -136,6 +156,7 @@ const useUser = () => {
         college_count,
         data_time_range,
       } = userData as UserData;
+
       const userContent = [];
       const assistantContent = [
         `###### 根据你提供的信息，结合近 ${

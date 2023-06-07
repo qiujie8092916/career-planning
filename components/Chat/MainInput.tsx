@@ -1,18 +1,26 @@
 import { Dispatch, FC, RefObject, SetStateAction, useContext } from 'react';
 
-import useUrlQuery from '@/hooks/useUrlQuery';
+
 
 import { QUERY_PROCESS_ENUM } from '@/utils/app/urlQuery';
 
+
+
 import { Message } from '@/types/chat';
+
+
 
 import HomeContext from '@/pages/api/home/home.context';
 
+
+
 import { ChatInput } from './ChatInput';
 import { EnterInfomation } from './EnterInfomation';
+import { Exhaust } from './Exhaust';
 import { Introduce } from './Introduce';
 import { Login } from './Login';
 import { Register } from './Register';
+
 
 export interface Props {
   handleSend: (
@@ -64,6 +72,8 @@ export const MainInput: FC<Props> = ({
             showScrollDownButton={showScrollDownButton}
           />
         );
+      case QUERY_PROCESS_ENUM.EXHAUST:
+        return <Exhaust setSpaceholder={setSpaceholder} />;
     }
   };
 
