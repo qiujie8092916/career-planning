@@ -28,7 +28,6 @@ export interface HomeInitialState {
   recommendLoading: boolean;
   recommendData: string[];
   loading: boolean;
-  lightMode: 'light' | 'dark';
   messageIsStreaming: boolean;
   modelError: ErrorMessage | null;
   models: OpenAIModel[];
@@ -36,8 +35,6 @@ export interface HomeInitialState {
   selectedConversation: Conversation | undefined;
   currentMessage: Message | undefined;
   prompts: Prompt[];
-  showChatbar: boolean;
-  showPromptbar: boolean;
   messageError: boolean;
   searchTerm: string;
   defaultModelId: OpenAIModelID | undefined;
@@ -53,7 +50,6 @@ export const initialState: HomeInitialState = {
   recommendLoading: false,
   recommendData: [],
   loading: false,
-  lightMode: 'dark',
   messageIsStreaming: false,
   modelError: null,
   models: [],
@@ -61,8 +57,6 @@ export const initialState: HomeInitialState = {
   selectedConversation: undefined,
   currentMessage: undefined,
   prompts: [],
-  showPromptbar: true,
-  showChatbar: true,
   messageError: false,
   searchTerm: '',
   defaultModelId: undefined,

@@ -14,8 +14,6 @@ import type { UserData } from '@/pages/api/home/home.state';
 
 import { v4 as uuidv4 } from 'uuid';
 
-export interface FetchUserRequestProps {}
-
 const useUser = () => {
   const fetchService = useFetch();
   const router = useRouter();

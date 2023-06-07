@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useQuery } from 'react-query';
 
 import { GetServerSideProps } from 'next';
@@ -11,17 +11,12 @@ import { useCreateReducer } from '@/hooks/useCreateReducer';
 import useErrorService from '@/services/errorService';
 import useApiService from '@/services/useApiService';
 
-import {
-  cleanConversationHistory,
-  cleanSelectedConversation,
-} from '@/utils/app/clean';
 import { DEFAULT_SYSTEM_PROMPT } from '@/utils/app/const';
 import {
   saveConversation,
   saveConversations,
   updateConversation,
 } from '@/utils/app/conversation';
-import { getSettings } from '@/utils/app/settings';
 import { SITE_NAME } from '@/utils/data/const';
 
 import { Conversation } from '@/types/chat';
@@ -35,8 +30,6 @@ import type { Actions as NavBarActions } from '@/components/Mobile/Navbar';
 import HomeContext from './home.context';
 import { HomeInitialState, initialState } from './home.state';
 
-import { loadFull } from 'tsparticles';
-import type { Engine } from 'tsparticles-engine';
 import { v4 as uuidv4 } from 'uuid';
 
 interface Props {
@@ -56,7 +49,7 @@ const Home = ({ serverSideApiKeyIsSet, defaultModelId }: Props) => {
   });
 
   const {
-    state: { lightMode, conversations, selectedConversation },
+    state: { conversations, selectedConversation },
     dispatch,
   } = contextValue;
 
@@ -146,12 +139,6 @@ const Home = ({ serverSideApiKeyIsSet, defaultModelId }: Props) => {
   // EFFECTS  --------------------------------------------
 
   useEffect(() => {
-    if (window.innerWidth < 640) {
-      dispatch({ field: 'showChatbar', value: false });
-    }
-  }, [selectedConversation]);
-
-  useEffect(() => {
     defaultModelId &&
       dispatch({ field: 'defaultModelId', value: defaultModelId });
     serverSideApiKeyIsSet &&
@@ -171,140 +158,11 @@ const Home = ({ serverSideApiKeyIsSet, defaultModelId }: Props) => {
   // ON LOAD --------------------------------------------
 
   useEffect(() => {
-    const settings = getSettings();
-    if (settings.theme) {
-      dispatch({
-        field: 'lightMode',
-        value: settings.theme,
-      });
-    }
-
-    if (window.innerWidth < 640) {
-      dispatch({ field: 'showChatbar', value: false });
-      dispatch({ field: 'showPromptbar', value: false });
-    }
-
-    const showChatbar = localStorage.getItem('showChatbar');
-    if (showChatbar) {
-      dispatch({ field: 'showChatbar', value: showChatbar === 'true' });
-    }
-
-    const showPromptbar = localStorage.getItem('showPromptbar');
-    if (showPromptbar) {
-      dispatch({ field: 'showPromptbar', value: showPromptbar === 'true' });
-    }
-
     const prompts = localStorage.getItem('prompts');
     if (prompts) {
       dispatch({ field: 'prompts', value: JSON.parse(prompts) });
     }
-
-    const conversationHistory = localStorage.getItem('conversationHistory');
-    if (conversationHistory) {
-      const parsedConversationHistory: Conversation[] =
-        JSON.parse(conversationHistory);
-      const cleanedConversationHistory = cleanConversationHistory(
-        parsedConversationHistory,
-      );
-
-      dispatch({ field: 'conversations', value: cleanedConversationHistory });
-    }
-
-    const selectedConversation = localStorage.getItem('selectedConversation');
-    if (selectedConversation) {
-      const parsedSelectedConversation: Conversation =
-        JSON.parse(selectedConversation);
-      const cleanedSelectedConversation = cleanSelectedConversation(
-        parsedSelectedConversation,
-      );
-
-      dispatch({
-        field: 'selectedConversation',
-        value: cleanedSelectedConversation,
-      });
-    } else {
-      const lastConversation = conversations[conversations.length - 1];
-      dispatch({
-        field: 'selectedConversation',
-        value: {
-          id: uuidv4(),
-          name: t('New Conversation'),
-          messages: [],
-          model: OpenAIModels[defaultModelId],
-          prompt: DEFAULT_SYSTEM_PROMPT,
-        },
-      });
-    }
   }, [defaultModelId, dispatch, serverSideApiKeyIsSet]);
-
-  const particlesInit = useCallback(async (engine: Engine) => {
-    await loadFull(engine);
-  }, []);
-
-  const particlesOptions = useMemo(
-    () => ({
-      particles: {
-        number: { value: 100, density: { enable: true, value_area: 800 } },
-        color: { value: '#333' },
-        shape: {
-          type: 'circle',
-          stroke: { width: 0, color: '#000000' },
-          polygon: { nb_sides: 5 },
-          image: { src: 'img/github.svg', width: 100, height: 100 },
-        },
-        opacity: {
-          value: 0.5,
-          random: false,
-          anim: { enable: false, speed: 1, opacity_min: 0.1, sync: false },
-        },
-        size: {
-          value: 3,
-          random: true,
-          anim: { enable: false, speed: 40, size_min: 0.1, sync: false },
-        },
-        line_linked: {
-          enable: true,
-          distance: 150,
-          color: '#aaa',
-          opacity: 0.4,
-          width: 1,
-        },
-        move: {
-          enable: true,
-          speed: 2,
-          direction: 'none',
-          random: false,
-          straight: false,
-          out_mode: 'out',
-          bounce: false,
-          attract: { enable: false, rotateX: 600, rotateY: 1200 },
-        },
-      },
-      interactivity: {
-        detect_on: 'canvas',
-        events: {
-          onhover: { enable: true, mode: 'grab' },
-          onclick: { enable: true, mode: 'push' },
-          resize: true,
-        },
-        modes: {
-          grab: { distance: 200, line_linked: { opacity: 1 } },
-          bubble: {
-            distance: 400,
-            size: 40,
-            duration: 2,
-            opacity: 8,
-            speed: 2,
-          },
-          repulse: { distance: 200, duration: 0.4 },
-          push: { particles_nb: 4 },
-          remove: { particles_nb: 2 },
-        },
-      },
-      retina_detect: true,
-    }),
-    [],
-  );
 
   return (
     <HomeContext.Provider
@@ -315,7 +173,6 @@ const Home = ({ serverSideApiKeyIsSet, defaultModelId }: Props) => {
         handleUpdateConversation,
       }}
     >
-      {/*<Particles options={particlesOptions as ISourceOptions} init={particlesInit} />*/}
       <Head>
         <title>{SITE_NAME}</title>
         <meta name="description" content="ChatGPT but better." />
@@ -330,7 +187,7 @@ const Home = ({ serverSideApiKeyIsSet, defaultModelId }: Props) => {
         <div className="relative flex h-full max-w-full flex-1">
           <div className="flex h-full max-w-full flex-1 flex-col overflow-hidden">
             <main
-              className={`relative h-full w-full transition-width flex flex-col overflow-hidden items-stretch flex-1 text-sm text-white ${lightMode}`}
+              className={`relative h-full w-full transition-width flex flex-col overflow-hidden items-stretch flex-1 text-sm text-white light`}
             >
               <div className="absolute top-0 w-full sm:hidden z-10 text-sm text-white">
                 <Navbar ref={navBarRef} />
