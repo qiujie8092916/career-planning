@@ -80,7 +80,7 @@ export const ChatMessage: FC<Props> = memo(({ message, messageIndex, onEdit }) =
       <div className="relative m-auto flex flex-col p-4 text-base md:max-w-2xl md:gap-6 py-6 lg:max-w-2xl lg:px-0 xl:max-w-3xl">
         <div className="w-full text-left font-black mb-3">
           {message.role === 'assistant' ? (
-            '>> 生涯规划师'
+            '>> 生涯咨询师'
           ) : (
             '>> 我'
           )}

@@ -73,6 +73,7 @@ export const ChatInput = ({
     }
 
     onSend({ role: 'user', content });
+    setExpansionRecommend(false);
     setContent('');
 
     if (window.innerWidth < 640 && textareaRef && textareaRef.current) {
