@@ -2,7 +2,6 @@ import React from 'react';
 
 import { copyToClipboard } from '@/utils/app/copyToClipboard';
 import { WECHAT_ID } from '@/utils/data/const';
-
 import clsx from 'clsx';
 
 type Props = {
