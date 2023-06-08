@@ -16,7 +16,7 @@ export const WechatServiceButton = ({ buttonClassName }: Props) => {
         'w-full text-base rounded-md bg-[rgba(130,128,128,0.25)] px-6 py-1.5',
         buttonClassName ?? '',
       )}
-      onClick={() => copyToClipboard()}
+      onClick={() => copyToClipboard(WECHAT_ID)}
     >
       点击复制客服微信加群 {WECHAT_ID}
     </button>
