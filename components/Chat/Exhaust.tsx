@@ -44,7 +44,7 @@ export const Exhaust: FC<Pick<MainInputProps, 'setSpaceholder'>> = ({
             点击复制邀请码 {(userData as UserData)?.invite_code ?? ''}
           </button>
           <p className="text-base mb-3.5">
-            加入官方交流群，成为付费会员即可享受无限次咨询。
+            加入官方交流群，有无限制使用福利和专业志愿咨询服务哦~
           </p>
           <WechatServiceButton buttonClassName={'mb-3.5'} />
           <button

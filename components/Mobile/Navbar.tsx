@@ -94,11 +94,10 @@ export const Navbar = forwardRef<Actions, Props>((_, ref) => {
               {/*  注意：MyPath 目前仅收录了 985/211 院校的相关数据。{' '}*/}
               {/*</p>*/}
               <p className="text-base mb-5">
-                MyPath
-                将根据填写的信息及考试院官方公布数据进行预测，仅适用于普通类考生志愿填报，不适用于艺考、国家专项等特殊类型招生方式。
+                我们致力于让所有组织、个人都能在各种生产生活场景中享受个性化 AI 带来的帮助，欢迎志同道合的小伙伴加入。
               </p>
               <p className="text-base mb-5">
-                推荐结果仅供参考，数据以官方公布为准。
+                MyPath 将根据填写的信息及考试院官方公布数据进行预测，推荐结果仅供参考，数据以官方公布为准。
               </p>
               <div className="flex items-center flex-col mb-1">
                 <p className="text-xl mb-4 font-semibold text-center">

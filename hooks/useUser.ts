@@ -154,9 +154,7 @@ const useUser = () => {
 
       const userContent = [];
       const assistantContent = [
-        `###### 根据你提供的信息，结合近 ${
-          data_time_range ?? '-'
-        } 年分数线，已筛选出可报学校共 ${college_count ?? '-'} 所\n- 985：${
+        `###### 根据你提供的信息，我综合了历年专业排名进行预测，得出适合你的学校共 ${college_count ?? '-'} 所\n- 985：${
           college_985_count ?? '-'
         } 所 \n- 211：${
           college_211_count ?? '-'
